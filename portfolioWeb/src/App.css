@@ -1,184 +1,351 @@
-.counter {
-  font-size: 16px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  color: var(--accent);
-  background: var(--accent-bg);
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
-  margin-bottom: 24px;
-
-  &:hover {
-    border-color: var(--accent-border);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
+.app {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
 }
 
-.hero {
+.app canvas {
+  display: block;
+  touch-action: none;
+}
+
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #efe0c4;
+  color: #6b5a41;
+  font-size: 1.1rem;
+  letter-spacing: 0.02em;
+}
+
+.app__badge {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 10px 18px;
+  background: rgba(255, 250, 238, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 14px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 8px 24px rgba(60, 40, 15, 0.14);
+  pointer-events: none;
+}
+
+.app__badge-name {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-h);
+}
+
+.app__badge-title {
+  margin: 2px 0 0;
+  font-size: 0.75rem;
+  color: var(--text);
+  opacity: 0.75;
+}
+
+/* --- Dock --- */
+.dock {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  padding: 8px 10px;
+  background: rgba(255, 250, 238, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 18px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 10px 26px rgba(60, 40, 15, 0.16);
+}
+
+.dock__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  color: var(--text-h);
+  text-decoration: none;
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.dock__item:hover {
+  background: rgba(0, 0, 0, 0.06);
+  transform: translateY(-3px);
+}
+
+/* --- Paper menu cards (rendered inside the 3D scene via drei's Html) --- */
+.paper-card {
   position: relative;
-
-  .base,
-  .framework,
-  .vite {
-    inset-inline: 0;
-    margin: 0 auto;
-  }
-
-  .base {
-    width: 170px;
-    position: relative;
-    z-index: 0;
-  }
-
-  .framework,
-  .vite {
-    position: absolute;
-  }
-
-  .framework {
-    z-index: 1;
-    top: 34px;
-    height: 28px;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
-      scale(1.4);
-  }
-
-  .vite {
-    z-index: 0;
-    top: 107px;
-    height: 26px;
-    width: auto;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
-      scale(0.8);
-  }
+  width: 148px;
+  padding: 16px 14px 14px;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--sans);
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 10px 18px var(--paper-shadow), 0 2px 4px rgba(40, 26, 10, 0.18);
+  transition: box-shadow 0.2s ease;
 }
 
-#center {
+.paper-card:hover {
+  box-shadow: 0 22px 30px var(--paper-shadow), 0 4px 8px rgba(40, 26, 10, 0.2);
+}
+
+.paper-card__pin {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-8deg);
+  width: 26px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.paper-card__label {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  color: #3a2f22;
+  letter-spacing: 0.01em;
+}
+
+/* --- Detail overlay --- */
+.overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(30, 20, 10, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 30;
+}
+
+.overlay-panel {
+  position: relative;
+  width: min(680px, 100%);
+  max-height: min(680px, 90vh);
+  overflow-y: auto;
+  background: #fffaf0;
+  border-radius: 18px;
+  padding: 36px;
+  box-shadow: 0 30px 60px rgba(20, 12, 4, 0.35);
+}
+
+.overlay-panel--contact {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  overflow: visible;
+}
+
+.overlay-panel__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 5;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.overlay-panel__close:hover {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.overlay-panel--contact .overlay-panel__close {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* --- Panels (About / Projects / Experience / Skills) --- */
+.panel__title {
+  font-size: 1.8rem;
+}
+
+.panel__lead {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.panel__muted {
+  color: #8a7a63;
+  font-size: 0.85rem;
+  margin: 2px 0 8px;
+}
+
+.panel__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 20px;
+}
+
+.panel__block h3 {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #a3855b;
+  margin-bottom: 8px;
+}
+
+.panel__cards {
   display: flex;
   flex-direction: column;
-  gap: 25px;
-  place-content: center;
-  place-items: center;
-  flex-grow: 1;
-
-  @media (max-width: 1024px) {
-    padding: 32px 20px 24px;
-    gap: 18px;
-  }
+  gap: 18px;
 }
 
-#next-steps {
+.project-card {
+  display: block;
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: #f6ede0;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 22px rgba(90, 60, 20, 0.12);
+}
+
+.tag-list {
+  list-style: none;
   display: flex;
-  border-top: 1px solid var(--border);
-  text-align: left;
-
-  & > div {
-    flex: 1 1 0;
-    padding: 32px;
-    @media (max-width: 1024px) {
-      padding: 24px 20px;
-    }
-  }
-
-  .icon {
-    margin-bottom: 16px;
-    width: 22px;
-    height: 22px;
-  }
-
-  @media (max-width: 1024px) {
-    flex-direction: column;
-    text-align: center;
-  }
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0;
+  margin: 10px 0 0;
 }
 
-#docs {
-  border-right: 1px solid var(--border);
-
-  @media (max-width: 1024px) {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-  }
+.tag-list li {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(163, 133, 91, 0.15);
+  color: #7a5f3b;
 }
 
-#next-steps ul {
+.panel__timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.timeline-item {
+  padding-left: 16px;
+  border-left: 3px solid #d9c39a;
+}
+
+/* --- Business card --- */
+.business-card-scene {
+  perspective: 1400px;
+}
+
+.business-card {
+  position: relative;
+  width: 340px;
+  height: 200px;
+  border-radius: 16px;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  box-shadow: 0 30px 50px rgba(20, 12, 4, 0.4);
+}
+
+.business-card__face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 26px 30px;
+  border-radius: 16px;
+  backface-visibility: hidden;
+  background: linear-gradient(155deg, #fffaf0 0%, #f3e6cd 100%);
+}
+
+.business-card__back {
+  transform: rotateY(180deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: linear-gradient(155deg, #2a2118 0%, #4a3a26 100%);
+  color: #f3e6cd;
+}
+
+.business-card__eyebrow {
+  margin: 0 0 6px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #a3855b;
+}
+
+.business-card__back .business-card__eyebrow {
+  color: #d9c39a;
+}
+
+.business-card__name {
+  margin: 0 0 14px;
+  font-size: 1.3rem;
+}
+
+.business-card__contacts {
   list-style: none;
   padding: 0;
+  margin: 0;
   display: flex;
+  flex-direction: column;
   gap: 8px;
-  margin: 32px 0 0;
-
-  .logo {
-    height: 18px;
-  }
-
-  a {
-    color: var(--text-h);
-    font-size: 16px;
-    border-radius: 6px;
-    background: var(--social-bg);
-    display: flex;
-    padding: 6px 12px;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    transition: box-shadow 0.3s;
-
-    &:hover {
-      box-shadow: var(--shadow);
-    }
-    .button-icon {
-      height: 18px;
-      width: 18px;
-    }
-  }
-
-  @media (max-width: 1024px) {
-    margin-top: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    li {
-      flex: 1 1 calc(50% - 8px);
-    }
-
-    a {
-      width: 100%;
-      justify-content: center;
-      box-sizing: border-box;
-    }
-  }
+  font-size: 0.85rem;
 }
 
-#spacer {
-  height: 88px;
-  border-top: 1px solid var(--border);
-  @media (max-width: 1024px) {
-    height: 48px;
-  }
+.business-card__contacts li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.ticks {
-  position: relative;
-  width: 100%;
+.business-card__contacts a {
+  text-decoration: none;
+}
 
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: -4.5px;
-    border: 5px solid transparent;
-  }
+.business-card__contacts a:hover {
+  text-decoration: underline;
+}
 
-  &::before {
-    left: 0;
-    border-left-color: var(--border);
-  }
-  &::after {
-    right: 0;
-    border-right-color: var(--border);
-  }
+.business-card__quote {
+  font-style: italic;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.business-card__hint {
+  position: absolute;
+  bottom: 12px;
+  right: 18px;
+  font-size: 0.65rem;
+  opacity: 0.5;
 }
