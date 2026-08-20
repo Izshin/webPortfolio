@@ -52,7 +52,7 @@ export function Bonsai({ height = 0.35, ...props }: { height?: number } & JSX.In
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh
         const name = originalMaterialName(mesh)
-        if (name.includes('Plane')) mesh.material = leavesMaterial
+        if (name.includes('Leaves')) mesh.material = leavesMaterial
         else if (name.includes('Pot')) mesh.material = potMaterial
         else mesh.material = trunkMaterial
       }

@@ -16,8 +16,6 @@ export function PaperCard({ item, index, onSelect }: PaperCardProps) {
       initial={{ y: -320, opacity: 0, rotate: item.rotation * 2.4 }}
       animate={{ y: 0, opacity: 1, rotate: item.rotation }}
       transition={{ type: 'spring', stiffness: 85, damping: 15, delay: 0.5 + index * 0.13 }}
-      whileHover={{ y: -10, rotate: 0, scale: 1.05 }}
-      whileTap={{ scale: 0.96 }}
       onClick={() => onSelect(item.id)}
     >
       <span className="paper-card__pin" />

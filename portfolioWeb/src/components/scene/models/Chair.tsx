@@ -7,7 +7,7 @@ import { enableShadows, asColor, fitToHeight } from './modelUtils'
 
 const BASE = '/models/office-chair/source/extracted/model'
 
-export function Chair({ height = 0.85, ...props }: { height?: number } & JSX.IntrinsicElements['group']) {
+export function Chair({ height = 1.1, ...props }: { height?: number } & JSX.IntrinsicElements['group']) {
   const collada = useLoader(ColladaLoader, `${BASE}/model.dae`)
   const [map, metalnessMap, normalMap, roughnessMap] = useTexture([
     `${BASE}/textures/01 - Default_albedo.jpg`,
@@ -35,19 +35,6 @@ export function Chair({ height = 0.85, ...props }: { height?: number } & JSX.Int
     })
     enableShadows(model)
     fitToHeight(model, height, 'Chair')
-    console.warn('[Chair DEBUG] sync scale/pos', model.scale.toArray(), model.position.toArray(), 'parent', model.parent?.type)
-    requestAnimationFrame(() => {
-      model.updateWorldMatrix(true, true)
-      const worldBox = new THREE.Box3().setFromObject(model)
-      console.warn('[Chair DEBUG] world box min/max', worldBox.min.toArray(), worldBox.max.toArray())
-      let node: THREE.Object3D | null = model
-      const chain = []
-      while (node) {
-        chain.push({ type: node.type, name: node.name, scale: node.scale.toArray(), pos: node.position.toArray() })
-        node = node.parent
-      }
-      console.warn('[Chair DEBUG] ancestor chain', JSON.stringify(chain))
-    })
   }, [model, map, metalnessMap, normalMap, roughnessMap, height])
 
   return (

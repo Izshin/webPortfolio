@@ -1,0 +1,193 @@
+newmtl blinn1SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd TrunkDiff.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+newmtl blinn2SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd DirtDiff.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+map_Ks DirtSpec.png
+newmtl blinn3SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd ConcreteDiff.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+map_Ks ConcreteSpec.png
+newmtl blinn3SG1
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.00 0.00 0.00
+newmtl blinn4SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd PotteryDiff.png
+Ni 1.00
+Ks 0.50 0.50 0.50
+newmtl blinn6SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd GrassDiff.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+map_Ks GrassSpec.png
+newmtl blinn7SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd BluePlasterDiff.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+map_Ks BluePlasterSpec.png
+newmtl blinn9SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd Wood-MetalDiff.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+map_Ks Wood-MetalSpec.png
+newmtl initialShadingGroup
+illum 4
+Kd 1.00 0.92 0.49
+Ka 0.00 0.00 0.00
+Tf 0.30 0.30 0.30
+Ni 1.00
+newmtl pasted__blinn1SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.00 0.00 0.00
+newmtl pasted__blinn1SG1
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd TrunkDiff.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+newmtl pasted__blinn2SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.00 0.00 0.00
+map_Ks PalmLeafSpec.png
+newmtl pasted__blinn2SG1
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd DirtDiff.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+map_Ks DirtSpec.png
+newmtl pasted__blinn3SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd ConcreteDiff.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+map_Ks ConcreteSpec.png
+newmtl pasted__blinn3SG1
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd CordylineDiff.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+newmtl pasted__blinn3SG2
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd ConcreteDiff.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+map_Ks ConcreteSpec.png
+newmtl pasted__blinn4SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd PotteryDiff.png
+Ni 1.00
+Ks 0.50 0.50 0.50
+newmtl pasted__blinn6SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd GrassDiff.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+map_Ks GrassSpec.png
+newmtl pasted__blinn6SG1
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd GrassDiff.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+map_Ks GrassSpec.png
+newmtl pasted__blinn7SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd BluePlasterDiff.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+map_Ks BluePlasterSpec.png
+newmtl pasted__blinn9SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd Wood-MetalDiff.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+map_Ks Wood-MetalSpec.png
+newmtl pasted__pasted__blinn1SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd HedgeDiff.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+newmtl pasted__pasted__blinn2SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd PalmLeafDiff.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+map_Ks PalmLeafSpec.png

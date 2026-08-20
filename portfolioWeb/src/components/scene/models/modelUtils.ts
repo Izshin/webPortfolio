@@ -29,6 +29,20 @@ export function originalMaterialName(mesh: THREE.Mesh) {
 }
 
 /**
+ * Returns the mesh's original (as-parsed) diffuse color, caching it in userData for the
+ * same StrictMode-safety reason as `originalMaterialName`. Some FBX models (e.g. the pen
+ * holder, whose "pens" are separate meshes each with their own DiffuseColor) rely on this
+ * per-mesh color instead of a single shared material name/texture.
+ */
+export function originalMaterialColor(mesh: THREE.Mesh, fallback: THREE.ColorRepresentation = '#ffffff') {
+  if (mesh.userData.__originalColor === undefined) {
+    const material = mesh.material as THREE.MeshStandardMaterial | THREE.MeshPhongMaterial | undefined
+    mesh.userData.__originalColor = material?.color ? material.color.clone() : new THREE.Color(fallback)
+  }
+  return mesh.userData.__originalColor as THREE.Color
+}
+
+/**
  * Scales the object so its bounding-box height matches targetHeight, then grounds/centers it at the local origin.
  *
  * Measures while temporarily detached from its parent. `Box3.setFromObject` works in
