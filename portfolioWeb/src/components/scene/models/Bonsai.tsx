@@ -3,11 +3,15 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 import { useTexture } from '@react-three/drei'
 import { useEffect, useMemo } from 'react'
 import * as THREE from 'three'
-import { enableShadows, asColor, fitToHeight, originalMaterialName } from './modelUtils'
+import { enableShadows, asColor, fitToHeight, originalMaterialName, saturateTexture } from './modelUtils'
 
 const BASE = '/models/bonsaitree'
 
-export function Bonsai({ height = 0.35, ...props }: { height?: number } & JSX.IntrinsicElements['group']) {
+export function Bonsai({
+  height = 0.35,
+  saturation = 1.4,
+  ...props
+}: { height?: number; saturation?: number } & JSX.IntrinsicElements['group']) {
   const fbx = useLoader(FBXLoader, `${BASE}/source/Bonsai_Final.fbx`)
   const textures = useTexture({
     trunkMap: `${BASE}/textures/LP_Cutted_Retopo_New_BaseColor.png`,
@@ -27,14 +31,18 @@ export function Bonsai({ height = 0.35, ...props }: { height?: number } & JSX.In
     asColor(textures.leavesMap)
     asColor(textures.potMap)
 
+    const trunkMap = saturateTexture(textures.trunkMap, saturation)
+    const leavesMap = saturateTexture(textures.leavesMap, saturation)
+    const potMap = saturateTexture(textures.potMap, saturation)
+
     const trunkMaterial = new THREE.MeshStandardMaterial({
-      map: textures.trunkMap,
+      map: trunkMap,
       normalMap: textures.trunkNormal,
       roughnessMap: textures.trunkRoughness,
       roughness: 1,
     })
     const leavesMaterial = new THREE.MeshStandardMaterial({
-      map: textures.leavesMap,
+      map: leavesMap,
       metalnessMap: textures.leavesMetalness,
       transparent: true,
       alphaTest: 0.4,
@@ -42,7 +50,7 @@ export function Bonsai({ height = 0.35, ...props }: { height?: number } & JSX.In
       roughness: 0.9,
     })
     const potMaterial = new THREE.MeshStandardMaterial({
-      map: textures.potMap,
+      map: potMap,
       normalMap: textures.potNormal,
       roughnessMap: textures.potRoughness,
       roughness: 1,
@@ -59,7 +67,7 @@ export function Bonsai({ height = 0.35, ...props }: { height?: number } & JSX.In
     })
     enableShadows(model)
     fitToHeight(model, height, 'Bonsai')
-  }, [model, textures, height])
+  }, [model, textures, height, saturation])
 
   return (
     <group {...props}>

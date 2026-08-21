@@ -16,6 +16,53 @@ export function asColor(tex?: THREE.Texture) {
 }
 
 /**
+ * Returns a color-boosted copy of a diffuse texture (luminance-preserving saturation push,
+ * done via canvas pixel manipulation since three.js textures don't expose HSL adjustment).
+ * Result is cached on the source texture's userData so StrictMode's double effect invocation
+ * (and repeat calls) don't rebuild the canvas/texture every time.
+ */
+export function saturateTexture(texture: THREE.Texture, amount = 1.3): THREE.Texture {
+  if (amount === 1) return texture
+  if (texture.userData.__saturated) return texture.userData.__saturated as THREE.Texture
+
+  const image = texture.image as HTMLImageElement | HTMLCanvasElement | ImageBitmap | undefined
+  if (!image || !image.width || !image.height) return texture
+
+  const canvas = document.createElement('canvas')
+  canvas.width = image.width
+  canvas.height = image.height
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return texture
+
+  ctx.drawImage(image as CanvasImageSource, 0, 0)
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+  const data = imageData.data
+  const clamp255 = (v: number) => Math.min(255, Math.max(0, v))
+
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i]
+    const g = data[i + 1]
+    const b = data[i + 2]
+    const luma = 0.299 * r + 0.587 * g + 0.114 * b
+    data[i] = clamp255(luma + (r - luma) * amount)
+    data[i + 1] = clamp255(luma + (g - luma) * amount)
+    data[i + 2] = clamp255(luma + (b - luma) * amount)
+  }
+  ctx.putImageData(imageData, 0, 0)
+
+  const saturated = new THREE.CanvasTexture(canvas)
+  saturated.colorSpace = texture.colorSpace
+  saturated.wrapS = texture.wrapS
+  saturated.wrapT = texture.wrapT
+  saturated.flipY = texture.flipY
+  saturated.repeat.copy(texture.repeat)
+  saturated.needsUpdate = true
+
+  texture.userData.__saturated = saturated
+  return saturated
+}
+
+/**
  * Returns the mesh's original (as-parsed) material name, caching it in userData.
  * Needed because material-matching effects reassign `mesh.material` to a brand-new
  * (unnamed) material; without caching, React StrictMode's double effect invocation

@@ -8,8 +8,11 @@ import { Bonsai } from './models/Bonsai'
 import { PottedPlant } from './models/PottedPlant'
 import { PenHolder } from './models/PenHolder'
 import { ClipBoard } from './models/ClipBoard'
+import { GreekEnvironment } from './models/GreekEnvironment'
+import { Skybox } from './models/Skybox'
 import { CameraRig } from './CameraRig'
 import { Wall } from './Wall'
+import { Floor } from './Floor'
 import { MenuCards } from '../menu/MenuCards'
 import type { SectionId } from '../../data/menu'
 
@@ -42,7 +45,7 @@ export function Room({ onSelectSection }: { onSelectSection: (id: SectionId) => 
       <OrbitControls ref={controlsRef} onEnd={logCamera} target={[-0.1, 0.55, -0.22]} />
 
       <color attach="background" args={['#efe0c4']} />
-      <fog attach="fog" args={['#efe0c4', 7, 15]} />
+      {/* <fog attach="fog" args={['#d1e6f8', 10, 15]} /> */}
 
       <ambientLight intensity={0.6} />
       <directionalLight
@@ -60,12 +63,18 @@ export function Room({ onSelectSection }: { onSelectSection: (id: SectionId) => 
       <pointLight position={[2.5, 1.5, 2]} intensity={0.25} color="#bfe0ff" />
 
       {/* Floor */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.001, 0]} receiveShadow>
-        <planeGeometry args={[9, 5]} />
-        <meshStandardMaterial color="#b98a5e" roughness={0.95} />
-      </mesh>
+      <Suspense fallback={null}>
+        <Floor />
+      </Suspense>
 
-      <Wall position={[-0.4, 1.8, -2.6]} windowWidth={3} />
+      <Suspense fallback={null}>
+        <Wall position={[-0.4, 1.8, -2.6]} windowWidth={3} />
+      </Suspense>
+
+      <Suspense fallback={null}>
+        <Skybox position={[0, -5, 0]}/>
+        <GreekEnvironment position={[0.5, -5.3, -9.5]} rotation={[0, Math.PI * 1, 0]}/>
+      </Suspense>
 
       <Suspense fallback={null}>
         <Desk/>

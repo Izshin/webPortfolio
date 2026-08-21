@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import * as THREE from 'three'
+import { useTexture } from '@react-three/drei'
 import { Window } from './Window'
 
 interface WallProps {
@@ -15,6 +16,10 @@ interface WallProps {
   showWindow?: boolean
   windowFrameColor?: string
   windowGlassColor?: string
+  /** Path to the wall's diffuse texture. Set to null to fall back to a flat `color`. */
+  texturePath?: string | null
+  /** Real-world size (in wall units) a single texture tile should cover. Omit for one untiled image stretched across the whole wall. */
+  textureTileSize?: number
 }
 
 /** A flat wall with an actual cut-out window opening (via a Shape hole), filled by a <Window /> with glass panes. */
@@ -25,12 +30,33 @@ export function Wall({
   windowWidth = 1.8,
   windowHeight = 1.4,
   windowOffset = [0, -1.1],
-  color = '#dbe6d6',
+  color = '#ffffff',
   showWindow = true,
   windowFrameColor,
   windowGlassColor,
+  texturePath = '/models/marbeWalltexture.png',
+  textureTileSize,
 }: WallProps) {
   const [ox, oy] = windowOffset
+
+  // useTexture suspends, so <Wall /> must be rendered inside a <Suspense> boundary.
+  const wallTexture = useTexture(texturePath ?? '/models/marbeWalltexture.png')
+
+  useMemo(() => {
+    if (!texturePath) return
+    wallTexture.wrapS = THREE.RepeatWrapping
+    wallTexture.wrapT = THREE.RepeatWrapping
+    // ShapeGeometry's auto-UVs are raw local/world coordinates (not normalized 0-1),
+    // so `repeat` must be the inverse of the desired tile size in world units — using
+    // width/tileSize here (as if UVs were 0-1) over-repeated the texture into dozens
+    // of thin vertical strips. With no tileSize, repeat = 1/width & 1/height stretches
+    // exactly one copy of the image across the whole wall (no seams/repeats at all).
+    const tileX = textureTileSize ?? width
+    const tileY = textureTileSize ?? height
+    wallTexture.repeat.set(1 / tileX, 1 / tileY)
+    wallTexture.colorSpace = THREE.SRGBColorSpace
+    wallTexture.needsUpdate = true
+  }, [wallTexture, texturePath, width, height, textureTileSize])
 
   const wallShape = useMemo(() => {
     const hw = width / 2
@@ -59,7 +85,12 @@ export function Wall({
     <group position={position}>
       <mesh receiveShadow>
         <shapeGeometry args={[wallShape]} />
-        <meshStandardMaterial color={color} roughness={1} side={THREE.DoubleSide} />
+        <meshStandardMaterial
+          map={texturePath ? wallTexture : null}
+          color={color}
+          roughness={1}
+          side={THREE.DoubleSide}
+        />
       </mesh>
       {showWindow && (
         <Window
