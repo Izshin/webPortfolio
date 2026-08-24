@@ -5,6 +5,7 @@ import { Window } from './Window'
 
 interface WallProps {
   position?: [number, number, number]
+  rotation?: [number, number, number]
   width?: number
   height?: number
   windowWidth?: number
@@ -25,6 +26,7 @@ interface WallProps {
 /** A flat wall with an actual cut-out window opening (via a Shape hole), filled by a <Window /> with glass panes. */
 export function Wall({
   position = [0, 1.8, -2.6],
+  rotation = [0, 0, 0],
   width = 8,
   height = 4,
   windowWidth = 1.8,
@@ -68,21 +70,23 @@ export function Wall({
     shape.lineTo(-hw, hh)
     shape.lineTo(-hw, -hh)
 
-    const whw = windowWidth / 2
-    const whh = windowHeight / 2
-    const hole = new THREE.Path()
-    hole.moveTo(ox - whw, oy - whh)
-    hole.lineTo(ox + whw, oy - whh)
-    hole.lineTo(ox + whw, oy + whh)
-    hole.lineTo(ox - whw, oy + whh)
-    hole.lineTo(ox - whw, oy - whh)
-    shape.holes.push(hole)
+    if (showWindow) {
+      const whw = windowWidth / 2
+      const whh = windowHeight / 2
+      const hole = new THREE.Path()
+      hole.moveTo(ox - whw, oy - whh)
+      hole.lineTo(ox + whw, oy - whh)
+      hole.lineTo(ox + whw, oy + whh)
+      hole.lineTo(ox - whw, oy + whh)
+      hole.lineTo(ox - whw, oy - whh)
+      shape.holes.push(hole)
+    }
 
     return shape
-  }, [width, height, windowWidth, windowHeight, ox, oy])
+  }, [width, height, windowWidth, windowHeight, ox, oy, showWindow])
 
   return (
-    <group position={position}>
+    <group position={position} rotation={rotation}>
       <mesh receiveShadow>
         <shapeGeometry args={[wallShape]} />
         <meshStandardMaterial

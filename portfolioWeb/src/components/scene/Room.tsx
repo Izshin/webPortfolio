@@ -69,6 +69,12 @@ export function Room({ onSelectSection }: { onSelectSection: (id: SectionId) => 
 
       <Suspense fallback={null}>
         <Wall position={[-0.4, 1.8, -2.6]} windowWidth={3} />
+        <Wall
+          position={[-4.4, 1.8, -0.05]}
+          rotation={[0, Math.PI / 2, 0]}
+          width={5.1}
+          showWindow={false}
+        />
       </Suspense>
 
       <Suspense fallback={null}>
