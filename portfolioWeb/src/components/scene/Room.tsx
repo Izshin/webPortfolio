@@ -10,6 +10,7 @@ import { WacomPen } from './models/WacomPen'
 import { Boombox } from './models/Boombox'
 import { MusicNotes } from './models/MusicNotes'
 import { ClipBoard } from './models/ClipBoard'
+import { CardHolder, FLOAT_OUT, FLOAT_Y } from './models/CardHolder'
 import { GreekEnvironment } from './models/GreekEnvironment'
 import { Skybox } from './models/Skybox'
 import { CameraRig } from './CameraRig'
@@ -61,11 +62,34 @@ const CLIPBOARD_FOCUS = {
   lookAt: [...CLIPBOARD_POSITION] as [number, number, number],
 }
 
-export type FocusTarget = 'boombox' | 'clipboard'
+export type FocusTarget = 'boombox' | 'clipboard' | 'card'
+
+const CARD_POSITION: [number, number, number] = [-0.392, 0.75, 0.175]
+const CARD_ROTATION_Y = 2.45
+const CARD_DISTANCE = 0.16
+// Shallower than the clipboard: held up, the card turns to face wherever the camera lands.
+const CARD_PITCH = (26 * Math.PI) / 180
+// The cards face the holder's own -X, so that normal is where the camera has to sit.
+const CARD_FACE_X = -Math.cos(CARD_ROTATION_Y)
+const CARD_FACE_Z = Math.sin(CARD_ROTATION_Y)
+const CARD_AIM: [number, number, number] = [
+  CARD_POSITION[0] + CARD_FACE_X * FLOAT_OUT,
+  CARD_POSITION[1] + FLOAT_Y,
+  CARD_POSITION[2] + CARD_FACE_Z * FLOAT_OUT,
+]
+const CARD_FOCUS = {
+  position: [
+    CARD_AIM[0] + CARD_FACE_X * Math.cos(CARD_PITCH) * CARD_DISTANCE,
+    CARD_AIM[1] + Math.sin(CARD_PITCH) * CARD_DISTANCE,
+    CARD_AIM[2] + CARD_FACE_Z * Math.cos(CARD_PITCH) * CARD_DISTANCE,
+  ] as [number, number, number],
+  lookAt: CARD_AIM,
+}
 
 const FOCUS_POSES: Record<FocusTarget, typeof BOOMBOX_FOCUS> = {
   boombox: BOOMBOX_FOCUS,
   clipboard: CLIPBOARD_FOCUS,
+  card: CARD_FOCUS,
 }
 
 export function Room({
@@ -178,6 +202,12 @@ export function Room({
           }}
           onPointerOver={() => (document.body.style.cursor = 'pointer')}
           onPointerOut={() => (document.body.style.cursor = 'auto')}
+        />
+        <CardHolder
+          position={CARD_POSITION}
+          rotation={[0, CARD_ROTATION_Y, 0]}
+          interactive={focus === 'card'}
+          onActivate={() => onFocus('card')}
         />
         <ContactShadows position={[0, 0.001, 0]} opacity={0.45} scale={12} blur={2} far={4} />
         <Environment preset="apartment" environmentIntensity={0.4} />

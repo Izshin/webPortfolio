@@ -140,26 +140,29 @@ const enPages: NotePage[] = [
     eyebrow: 'Experience 01',
     title: 'Click-IT',
     titleUrl: URL.clickIt,
-    subtitle: 'Barcelona, Spain · 3 months',
+    subtitle: 'Barcelona, Spain · 4 months',
     blocks: [
       {
         kind: 'lead',
-        text: 'Three months in Barcelona, three products, and a real client behind every one of them.',
+        text: 'Four months at a Barcelona company, my first time working on bigger products and dealing with bigger clients.',
       },
       { kind: 'gap', size: 6 },
       {
         kind: 'bullet',
-        text: 'La Farga — vehicle and parking management for L’Hospitalet. Angular and Fastify, dealing with the client directly, and my first taste of a genuinely big project.',
+        text: 'La Farga: vehicle and parking management for L’Hospitalet, with Angular and Fastify and the client on the other side.',
       },
       {
         kind: 'bullet',
-        text: 'gsharp — a CRM in Angular where I went deeper into Django and used Microsoft’s API to bring Microsoft Planner into the app.',
+        text: 'GSharp: Click-IT’s own internal CRM, where I went deeper into Django and used Microsoft’s API to bring in Planner.',
       },
       {
         kind: 'bullet',
-        text: 'Kam — another management CRM: I refactored old code and wrote my first .NET and C# backend, which is where I learned to spot bottlenecks and live with legacy code.',
+        text: 'Kam: mesoestetic’s competition tracker, a big international market and product management suite: campaigns by country, city and year, market targets, catalogue…',
       },
-      { kind: 'bullet', text: 'And a competitor tracker for mesoestetic.' },
+      {
+        kind: 'bullet',
+        text: 'In Kam I refactored plenty of code and wrote my first .NET and C# backend, where I learnt about dealing with bottlenecks and legacy code',
+      },
     ],
   },
   {
@@ -170,18 +173,18 @@ const enPages: NotePage[] = [
     blocks: [
       {
         kind: 'lead',
-        text: 'Three months with a Swedish startup, building the site where their knitting patterns live.',
+        text: 'I spent three months from university vacation with a Swedish startup, building the site where their knitting patterns were stored.',
       },
       { kind: 'gap', size: 6 },
       {
         kind: 'bullet',
-        text: `I designed every [mockup](${URL.figma}) and the whole user flow before a single component existed.`,
+        text: `I designed every [mockup](${URL.figma}) and the whole user flow of the site.`,
       },
-      { kind: 'bullet', text: 'Then I built those screens as React components for the site.' },
+      { kind: 'bullet', text: 'Then I built some of those screens as React components for the site.' },
       { kind: 'gap' },
       {
         kind: 'text',
-        text: 'Doing the design and the frontend at once taught me to care about how a flow feels, not just whether it works.',
+        text: 'Doing the design and the frontend separately taught me to think about the flow and how intuitive the app felt.',
       },
     ],
   },
@@ -323,28 +326,28 @@ const esPages: NotePage[] = [
     eyebrow: 'Experiencia 01',
     title: 'Click-IT',
     titleUrl: URL.clickIt,
-    subtitle: 'Barcelona, España · 3 meses',
+    subtitle: 'Barcelona, España · 4 meses',
     blocks: [
       {
         kind: 'lead',
-        text: 'Tres meses en Barcelona, tres productos y un cliente real detrás de cada uno.',
+        text: 'Estuve cuatro meses con una empresa barcelonesa, donde trabajé por primera vez con productos más grandes y traté con clientes más relevantes.',
       },
       { kind: 'gap', size: 6 },
       {
         kind: 'bullet',
-        text: 'La Farga — gestión de vehículos y aparcamiento para L’Hospitalet. Aquí aprendí Angular y Fastify, a tratar con el cliente y a moverme en un proyecto de verdad grande.',
+        text: 'La Farga: gestión de vehículos y aparcamiento para L’Hospitalet, con Angular y Fastify y trato directo con el cliente.',
       },
       {
         kind: 'bullet',
-        text: 'gsharp — un CRM en Angular donde profundicé en Django y usé la API de Microsoft para integrar Microsoft Planner en la aplicación.',
+        text: 'GSharp: el CRM interno de la propia Click-IT; ahí profundicé en Django y usé la API de Microsoft para integrar Planner.',
       },
       {
         kind: 'bullet',
-        text: 'Kam — otro CRM de gestión: refactoricé código existente y monté mi primer backend en .NET con C#, y ahí aprendí a detectar cuellos de botella y a convivir con código legacy.',
+        text: 'Kam: el seguimiento de la competencia de mesoestetic, un software grande de gestión internacional de mercados y productos: campañas por país, ciudad y año, objetivos, catálogo…',
       },
       {
         kind: 'bullet',
-        text: 'Y una herramienta de seguimiento de la competencia para mesoestetic.',
+        text: 'En Kam refactoricé bastante código y monté mi primer backend en .NET con C#, donde aprendí a lidiar con cuellos de botella y código legacy',
       },
     ],
   },
@@ -356,18 +359,21 @@ const esPages: NotePage[] = [
     blocks: [
       {
         kind: 'lead',
-        text: 'Tres meses con una startup sueca, levantando la web donde viven sus patrones de punto.',
+        text: 'Pasé tres meses de las vacaciones de la universidad con una startup sueca, levantando la web donde se guardaban sus patrones de punto.',
       },
       { kind: 'gap', size: 6 },
       {
         kind: 'bullet',
-        text: `Diseñé todos los [mockups](${URL.figma}) y el flujo de usuario entero antes de que existiera un solo componente.`,
+        text: `Diseñé todos los [mockups](${URL.figma}) y el flujo de usuario entero de la web.`,
       },
-      { kind: 'bullet', text: 'Después construí esas pantallas como componentes de React.' },
+      {
+        kind: 'bullet',
+        text: 'Después construí algunas de esas pantallas como componentes de React para la web.',
+      },
       { kind: 'gap' },
       {
         kind: 'text',
-        text: 'Llevar el diseño y el frontend a la vez me enseñó a fijarme en cómo se siente un flujo, no solo en si funciona.',
+        text: 'Llevar el diseño y el frontend por separado me enseñó a pensar en el flujo y en lo intuitiva que resultaba la app.',
       },
     ],
   },
@@ -406,7 +412,7 @@ const esPages: NotePage[] = [
       { kind: 'meta', text: 'Instituto de Idiomas, Universidad de Sevilla' },
       { kind: 'gap' },
       { kind: 'heading', text: 'Además' },
-      { kind: 'bullet', text: 'Español (nativo) e inglés (C1)' },
+      { kind: 'bullet', text: 'Español (nativo)' },
       { kind: 'bullet', text: 'Carnet de conducir' },
       { kind: 'gap' },
       { kind: 'meta', text: `Escríbeme a ${profile.email}` },

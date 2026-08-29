@@ -239,8 +239,7 @@ function drawLanguageToggle(ctx: CanvasRenderingContext2D, lang: NoteLang, links
  * Paints one CV page over the paper diffuse. The page's v axis runs from the clip end (v=0)
  * to the far end (v=1) and three flips textures vertically, so drawing the canvas the
  * normal way up already reads correctly from the default camera.
- */
-function drawNote(
+ */function drawNote(
   paper: CanvasImageSource,
   page: NotePage,
   index: number,
@@ -335,6 +334,21 @@ function drawNote(
   texture.anisotropy = 8
   texture.needsUpdate = true
   return { texture, links }
+}
+
+/** The model's page diffuse is a dull grey scan; this washes it back to real paper white. */
+const PAPER_WASH = 0.7
+
+function whitenPaper(source: CanvasImageSource) {
+  const canvas = document.createElement('canvas')
+  canvas.width = PAGE_W
+  canvas.height = PAGE_H
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return null
+  ctx.drawImage(source, 0, 0, PAGE_W, PAGE_H)
+  ctx.fillStyle = `rgba(255, 255, 255, ${PAPER_WASH})`
+  ctx.fillRect(0, 0, PAGE_W, PAGE_H)
+  return canvas
 }
 
 /** Lays the blocks out from `startY`, returning the y it ended on. `paint: false` only measures. */
@@ -606,13 +620,23 @@ export function ClipBoard({
     })
   }
 
+  const paper = useMemo(() => {
+    const source = textures.pageMap.image as CanvasImageSource | undefined
+    const canvas = source ? whitenPaper(source) : null
+    if (!canvas) return { canvas: null, texture: textures.pageMap }
+    const texture = new THREE.CanvasTexture(canvas)
+    texture.colorSpace = THREE.SRGBColorSpace
+    texture.anisotropy = 8
+    return { canvas, texture }
+  }, [textures.pageMap])
+
   // Both languages are painted up front, so switching only swaps an already built texture.
   const painted = useMemo(() => {
-    const paper = textures.pageMap.image as CanvasImageSource | undefined
+    const sheet = paper.canvas
     const build = (l: NoteLang) =>
-      paper ? notePagesByLang[l].map((p, i) => drawNote(paper, p, i, notePagesByLang[l].length, l)) : []
+      sheet ? notePagesByLang[l].map((p, i) => drawNote(sheet, p, i, notePagesByLang[l].length, l)) : []
     return { es: build('es'), en: build('en') }
-  }, [textures.pageMap, fontsReady])
+  }, [paper, fontsReady])
 
   const sheets = painted[lang]
 
@@ -628,7 +652,7 @@ export function ClipBoard({
     asColor(textures.pageMap)
 
     const boardMaterial = new THREE.MeshStandardMaterial({ map: textures.boardMap, roughness: 0.85 })
-    const pageMaterial = new THREE.MeshStandardMaterial({ map: textures.pageMap, roughness: 0.9 })
+    const pageMaterial = new THREE.MeshStandardMaterial({ map: paper.texture, roughness: 0.9 })
 
     model.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
@@ -658,7 +682,7 @@ export function ClipBoard({
       depth: box.max.z - box.min.z,
       hingeZ: box.max.z,
     })
-  }, [model, textures, height])
+  }, [model, textures, height, paper])
 
   return (
     <group {...props}>
@@ -669,7 +693,7 @@ export function ClipBoard({
             key={i}
             frame={frame}
             map={page?.texture ?? null}
-            paper={textures.pageMap}
+            paper={paper.texture}
             lifted={i < pageIndex}
             // Top of the stack first, so page 0 sits highest and flips off on its own.
             offset={(sheets.length - i) * SHEET_GAP}

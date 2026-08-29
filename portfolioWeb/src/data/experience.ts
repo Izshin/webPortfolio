@@ -11,9 +11,9 @@ export const experience: Experience[] = [
     id: 'click-it',
     company: 'Click-IT',
     location: 'Barcelona based company',
-    duration: '3 Months',
+    duration: '4 Months',
     description:
-      'Developed mainly using React, Angular and C# private software solutions, including a ticket management system, a competitor-tracking tool for mesoestetic, and a vehicle management system for La Farga, a public entity managing municipal mobility and parking services in L\'Hospitalet de Llobregat (Barcelona).',
+      'Developed private software using React, Angular, Fastify and C#: La Farga, a vehicle and parking management system for the public entity running municipal mobility in L\'Hospitalet de Llobregat (Barcelona); GSharp, Click-IT\'s own internal CRM; and Kam, mesoestetic\'s competitor-tracking software for international market and product management.',
   },
   {
     id: 'knittedforyou',
