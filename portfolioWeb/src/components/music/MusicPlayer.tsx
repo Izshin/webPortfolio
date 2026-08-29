@@ -1,6 +1,6 @@
 import { useState, type CSSProperties, type PointerEvent } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Pause, Play, SkipBack, SkipForward, Volume2, VolumeX, X } from 'lucide-react'
+import { Pause, Play, Repeat1, Shuffle, SkipBack, SkipForward, Volume2, VolumeX, X } from 'lucide-react'
 import type { MusicPlayer as Player } from './useMusicPlayer'
 
 const formatTime = (seconds: number) => {
@@ -25,9 +25,18 @@ export function MusicPlayer({
   player: Player
   onClose: () => void
 }) {
-  const { track, playing, progress, duration, volume, muted } = player
+  const { track, playing, progress, duration, volume, muted, shuffle, repeat } = player
   const [tilt, setTilt] = useState(REST_TILT)
   const [panelTilt, setPanelTilt] = useState(PANEL_REST)
+  // While dragging the scrubber the local value wins, otherwise `timeupdate` fights the thumb.
+  const [scrub, setScrub] = useState<number | null>(null)
+  const scrubValue = scrub ?? progress
+
+  const commitScrub = () => {
+    if (scrub === null) return
+    player.seek(scrub)
+    setScrub(null)
+  }
 
   const trackTilt = (e: PointerEvent<HTMLDivElement>) => {
     const box = e.currentTarget.getBoundingClientRect()
@@ -95,20 +104,34 @@ export function MusicPlayer({
               </div>
 
               <div className="glass-player__scrub">
-                <span>{formatTime(progress)}</span>
+                <span>{formatTime(scrubValue)}</span>
                 <input
                   type="range"
                   min={0}
                   max={duration || 0}
                   step={0.1}
-                  value={progress}
-                  onChange={(e) => player.seek(Number(e.target.value))}
+                  value={scrubValue}
+                  onChange={(e) => setScrub(Number(e.target.value))}
+                  onPointerUp={commitScrub}
+                  onPointerCancel={commitScrub}
+                  onKeyUp={commitScrub}
+                  onBlur={commitScrub}
                   aria-label="Seek"
                 />
                 <span>{formatTime(duration)}</span>
               </div>
 
               <div className="glass-player__controls">
+                <button
+                  type="button"
+                  className={`glass-player__mode${shuffle ? ' is-active' : ''}`}
+                  onClick={player.toggleShuffle}
+                  aria-pressed={shuffle}
+                  aria-label={shuffle ? 'Disable shuffle' : 'Enable shuffle'}
+                  title={shuffle ? 'Shuffle on' : 'Shuffle off'}
+                >
+                  <Shuffle size={16} />
+                </button>
                 <button type="button" onClick={player.previous} aria-label="Previous track">
                   <SkipBack size={18} />
                 </button>
@@ -122,6 +145,16 @@ export function MusicPlayer({
                 </button>
                 <button type="button" onClick={player.next} aria-label="Next track">
                   <SkipForward size={18} />
+                </button>
+                <button
+                  type="button"
+                  className={`glass-player__mode${repeat ? ' is-active' : ''}`}
+                  onClick={player.toggleRepeat}
+                  aria-pressed={repeat}
+                  aria-label={repeat ? 'Disable repeat' : 'Repeat this track'}
+                  title={repeat ? 'Repeat on' : 'Repeat off'}
+                >
+                  <Repeat1 size={16} />
                 </button>
               </div>
 

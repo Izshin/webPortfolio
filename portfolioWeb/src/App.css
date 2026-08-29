@@ -665,6 +665,18 @@
   background: #fff !important;
 }
 
+.glass-player__mode {
+  width: 32px !important;
+  height: 32px !important;
+  opacity: 0.55;
+}
+
+.glass-player__mode.is-active {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.34) !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+}
+
 .glass-player__volume button {
   display: flex;
   padding: 4px;

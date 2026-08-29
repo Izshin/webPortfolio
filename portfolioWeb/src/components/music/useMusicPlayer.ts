@@ -1,14 +1,23 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { tracks } from '../../data/music'
 
+const randomIndex = (exclude = -1) => {
+  if (tracks.length < 2) return 0
+  let i = exclude
+  while (i === exclude) i = Math.floor(Math.random() * tracks.length)
+  return i
+}
+
 export function useMusicPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null)
-  const [index, setIndex] = useState(0)
+  const [index, setIndex] = useState(() => randomIndex())
   const [playing, setPlaying] = useState(false)
   const [volume, setVolume] = useState(0.6)
   const [muted, setMuted] = useState(false)
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(0)
+  const [shuffle, setShuffle] = useState(true)
+  const [repeat, setRepeat] = useState(false)
 
   const track = tracks[index]
 
@@ -52,7 +61,24 @@ export function useMusicPlayer() {
     return sum / (8 * 255)
   }, [])
 
-  const next = useCallback(() => setIndex((i) => (i + 1) % tracks.length), [])
+  // Read through a ref so toggling shuffle never re-creates `next` (and re-runs the effect below).
+  const shuffleRef = useRef(shuffle)
+  useEffect(() => {
+    shuffleRef.current = shuffle
+  }, [shuffle])
+
+  // With loop on, the element never fires `ended`, so it repeats the current track.
+  const repeatRef = useRef(repeat)
+  useEffect(() => {
+    repeatRef.current = repeat
+    const audio = audioRef.current
+    if (audio) audio.loop = repeat
+  }, [repeat])
+
+  const next = useCallback(
+    () => setIndex((i) => (shuffleRef.current ? randomIndex(i) : (i + 1) % tracks.length)),
+    [],
+  )
 
   useEffect(() => {
     const audio = audioRef.current
@@ -60,14 +86,19 @@ export function useMusicPlayer() {
     const onTime = () => setProgress(audio.currentTime)
     const onMeta = () => setDuration(audio.duration || 0)
     const onEnded = () => next()
+    const onPlay = () => setPlaying(true)
+    const onPause = () => setPlaying(false)
     audio.addEventListener('timeupdate', onTime)
     audio.addEventListener('loadedmetadata', onMeta)
     audio.addEventListener('ended', onEnded)
+    audio.addEventListener('play', onPlay)
+    audio.addEventListener('pause', onPause)
     return () => {
       audio.removeEventListener('timeupdate', onTime)
       audio.removeEventListener('loadedmetadata', onMeta)
       audio.removeEventListener('ended', onEnded)
-      audio.pause()
+      audio.removeEventListener('play', onPlay)
+      audio.removeEventListener('pause', onPause)
     }
   }, [next])
 
@@ -75,10 +106,12 @@ export function useMusicPlayer() {
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
+    const wasPlaying = !audio.paused || playing
     audio.src = encodeURI(track.src)
+    audio.loop = repeatRef.current
     setProgress(0)
     setDuration(0)
-    if (playing) void audio.play().catch(() => setPlaying(false))
+    if (wasPlaying) void audio.play().catch(() => undefined)
     // `playing` is intentionally omitted: it must not restart the track on pause/resume.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [track.src])
@@ -89,19 +122,36 @@ export function useMusicPlayer() {
     audio.volume = muted ? 0 : volume
   }, [volume, muted])
 
+  // Autoplay is usually blocked until the visitor interacts, so retry on the first gesture.
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio) return
+    let cancelled = false
+    void audio.play().catch(() => undefined)
+
+    const onGesture = () => {
+      if (cancelled) return
+      ensureAnalyser()
+      void ctxRef.current?.resume()
+      if (audio.paused) void audio.play().catch(() => undefined)
+    }
+    const events = ['pointerdown', 'keydown', 'touchstart'] as const
+    events.forEach((e) => window.addEventListener(e, onGesture, { once: true }))
+    return () => {
+      cancelled = true
+      events.forEach((e) => window.removeEventListener(e, onGesture))
+    }
+  }, [ensureAnalyser])
+
   const toggle = useCallback(() => {
     const audio = audioRef.current
     if (!audio) return
     if (audio.paused) {
       ensureAnalyser()
       void ctxRef.current?.resume()
-      void audio
-        .play()
-        .then(() => setPlaying(true))
-        .catch(() => setPlaying(false))
+      void audio.play().catch(() => undefined)
     } else {
       audio.pause()
-      setPlaying(false)
     }
   }, [ensureAnalyser])
 
@@ -131,6 +181,17 @@ export function useMusicPlayer() {
     setVolume(Math.min(1, Math.max(0, v)))
   }, [])
 
+  // Repeat-one and shuffle contradict each other: a looping track never reaches `ended`.
+  const toggleShuffle = useCallback(() => {
+    setShuffle(!shuffle)
+    if (!shuffle) setRepeat(false)
+  }, [shuffle])
+
+  const toggleRepeat = useCallback(() => {
+    setRepeat(!repeat)
+    if (!repeat) setShuffle(false)
+  }, [repeat])
+
   return useMemo(
     () => ({
       track,
@@ -139,6 +200,8 @@ export function useMusicPlayer() {
       duration,
       volume,
       muted,
+      shuffle,
+      repeat,
       toggle,
       next,
       previous,
@@ -147,8 +210,10 @@ export function useMusicPlayer() {
       setVolume: changeVolume,
       nudgeVolume,
       toggleMute: () => setMuted((m) => !m),
+      toggleShuffle,
+      toggleRepeat,
     }),
-    [track, playing, progress, duration, volume, muted, toggle, next, previous, seek, getLevel, nudgeVolume, changeVolume],
+    [track, playing, progress, duration, volume, muted, shuffle, repeat, toggle, next, previous, seek, getLevel, nudgeVolume, changeVolume, toggleShuffle, toggleRepeat],
   )
 }
 
