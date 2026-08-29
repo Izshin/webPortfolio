@@ -4,6 +4,7 @@ import { DetailOverlay } from './components/overlay/DetailOverlay'
 import { Dock } from './components/dock/Dock'
 import { MusicPlayer } from './components/music/MusicPlayer'
 import { useMusicPlayer } from './components/music/useMusicPlayer'
+import { LoadingScreen } from './components/LoadingScreen'
 import type { SectionId } from './data/menu'
 import type { NoteLang } from './data/notes'
 import './App.css'
@@ -17,7 +18,7 @@ function App() {
 
   return (
     <div className="app">
-      <Suspense fallback={<div className="loading-screen">Setting up the desk…</div>}>
+      <Suspense fallback={null}>
         <Room
           focus={focus}
           onFocus={setFocus}
@@ -30,6 +31,7 @@ function App() {
           onLangChange={setLang}
         />
       </Suspense>
+      <LoadingScreen />
       <Dock />
       <MusicPlayer open={focus === 'boombox'} player={player} onClose={() => setFocus(null)} />
       <DetailOverlay section={section} onClose={() => setSection(null)} />

@@ -29,6 +29,11 @@ export function GreekEnvironment({ height = 8.5, ...props }: { height?: number }
   const model = useMemo(() => obj.clone(true), [obj])
 
   useEffect(() => {
+    // The .mtl's own map_Kd file name, because on a cold load mat.map.image is still
+    // undefined (TextureLoader fills it in asynchronously) and reading .image.src there
+    // returned '' — which is why the foliage only looked right after a reload.
+    const mapFile = (name: string) => materials.materialsInfo[name]?.map_kd ?? ''
+
     model.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         const meshMaterials = (child as THREE.Mesh).material as THREE.MeshPhongMaterial | THREE.MeshPhongMaterial[]
@@ -37,8 +42,8 @@ export function GreekEnvironment({ height = 8.5, ...props }: { height?: number }
           if (!mat) continue
           // A few material variants (e.g. duplicate trunk/cordyline/palm-leaf groups) are missing their diffuse
           // map in this .mtl even though a sibling material of the same asset has it — borrow that sibling's map.
+          const siblingName = ORPHAN_MATERIAL_MAP_SOURCE[mat.name]
           if (!mat.map) {
-            const siblingName = ORPHAN_MATERIAL_MAP_SOURCE[mat.name]
             const sibling = siblingName ? (materials.materials[siblingName] as THREE.MeshPhongMaterial | undefined) : undefined
             if (sibling?.map) mat.map = sibling.map
           }
@@ -46,13 +51,14 @@ export function GreekEnvironment({ height = 8.5, ...props }: { height?: number }
             mat.map.colorSpace = THREE.SRGBColorSpace
             // this .mtl sets Kd (diffuse color) to black wherever map_Kd is used, which multiplies the texture to black — reset to white so the map shows through.
             mat.color.set('#ffffff')
-            const src = (mat.map.image as HTMLImageElement | undefined)?.src ?? ''
-            if (FOLIAGE_ALPHA_PATTERN.test(src)) {
+            const textureFile = mapFile(mat.name) || (siblingName ? mapFile(siblingName) : '')
+            if (FOLIAGE_ALPHA_PATTERN.test(textureFile)) {
               // leaf/hedge cutout cards ship an alpha channel; without this they render as solid opaque silhouettes.
               mat.transparent = true
               mat.alphaTest = 0.5
               mat.side = THREE.DoubleSide
             }
+            mat.needsUpdate = true
           }
         }
       }
