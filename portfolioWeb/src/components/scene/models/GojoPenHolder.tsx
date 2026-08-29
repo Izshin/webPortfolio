@@ -8,10 +8,14 @@ import { asset } from '../../../asset'
 
 const BASE = asset('/models/gojoPenHolder')
 
+// See GreekEnvironment: one OBJLoader instance is shared per constructor, so each OBJ model
+// needs its own subclass or their setMaterials calls clobber each other.
+class GojoOBJLoader extends OBJLoader {}
+
 /** Gojo figure (flat-color OBJ/MTL, no texture maps) — replaces the plain PenHolder on the desk. */
 export function GojoPenHolder({ height = 0.18, ...props }: { height?: number } & JSX.IntrinsicElements['group']) {
   const materials = useLoader(MTLLoader, `${BASE}/Gojo.mtl`)
-  const obj = useLoader(OBJLoader, `${BASE}/Gojo.obj`, (loader) => {
+  const obj = useLoader(GojoOBJLoader, `${BASE}/Gojo.obj`, (loader) => {
     materials.preload()
     loader.setMaterials(materials)
   })

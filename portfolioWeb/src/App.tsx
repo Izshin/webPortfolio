@@ -1,7 +1,6 @@
 import { Suspense, useState } from 'react'
 import { Room, type FocusTarget } from './components/scene/Room'
 import { DetailOverlay } from './components/overlay/DetailOverlay'
-import { Dock } from './components/dock/Dock'
 import { MusicPlayer } from './components/music/MusicPlayer'
 import { useMusicPlayer } from './components/music/useMusicPlayer'
 import { LoadingScreen } from './components/LoadingScreen'
@@ -32,7 +31,6 @@ function App() {
         />
       </Suspense>
       <LoadingScreen />
-      <Dock />
       <MusicPlayer open={focus === 'boombox'} player={player} onClose={() => setFocus(null)} />
       <DetailOverlay section={section} onClose={() => setSection(null)} />
     </div>

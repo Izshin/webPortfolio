@@ -21,6 +21,21 @@
   font-size: 1.1rem;
   letter-spacing: 0.02em;
   animation: loading-in 0.25s ease-out both;
+  transition: opacity 0.8s ease;
+}
+
+/* The scene fades in through the curtain; kill the entrance animation first or its
+   `both` fill would keep pinning opacity back to 1. */
+.loading-screen.is-hidden {
+  animation: none;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-screen.is-hidden .loading-screen__inner {
+  transform: translateY(-8px) scale(0.97);
+  opacity: 0;
+  transition: transform 0.5s ease, opacity 0.35s ease;
 }
 
 @keyframes loading-in {

@@ -8,6 +8,10 @@ import { asset } from '../../../asset'
 
 const BASE = asset('/models/greek-modular-environment/source/extracted/GreekModularEnvironment')
 
+// useLoader keeps ONE loader instance per constructor, and setMaterials mutates it — without a
+// private subclass this model and the Gojo OBJ overwrite each other's .mtl before either parses.
+class GreekOBJLoader extends OBJLoader {}
+
 // Leaf/hedge diffuse textures ship a real alpha channel for cutout cards (verified: Palm/Cordyline/Hedge Diff.png are RGBA; Grass/Trunk are opaque RGB).
 const FOLIAGE_ALPHA_PATTERN = /leaf|hedge|cordyline/i
 
@@ -21,7 +25,7 @@ const ORPHAN_MATERIAL_MAP_SOURCE: Record<string, string> = {
 /** Sketchfab "Greek Modular Environment" diorama (buildings/hedges/grass) — used as distant scenery seen through the Wall's window. */
 export function GreekEnvironment({ height = 8.5, ...props }: { height?: number } & JSX.IntrinsicElements['group']) {
   const materials = useLoader(MTLLoader, `${BASE}/GreekModularEnvironment.mtl`)
-  const obj = useLoader(OBJLoader, `${BASE}/GreekModularEnvironment.obj`, (loader) => {
+  const obj = useLoader(GreekOBJLoader, `${BASE}/GreekModularEnvironment.obj`, (loader) => {
     materials.preload()
     loader.setMaterials(materials)
   })
