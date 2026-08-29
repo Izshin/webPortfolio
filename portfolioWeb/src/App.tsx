@@ -19,7 +19,6 @@ function App() {
     <div className="app">
       <Suspense fallback={<div className="loading-screen">Setting up the desk…</div>}>
         <Room
-          onSelectSection={setSection}
           focus={focus}
           onFocus={setFocus}
           onBackgroundClick={() => setFocus(null)}

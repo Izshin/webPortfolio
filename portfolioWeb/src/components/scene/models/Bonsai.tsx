@@ -1,11 +1,12 @@
 import { useLoader } from '@react-three/fiber'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 import { useTexture } from '@react-three/drei'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, type JSX } from 'react'
 import * as THREE from 'three'
 import { enableShadows, asColor, fitToHeight, originalMaterialName, saturateTexture } from './modelUtils'
+import { asset } from '../../../asset'
 
-const BASE = '/models/bonsaitree'
+const BASE = asset('/models/bonsaitree')
 
 export function Bonsai({
   height = 0.35,

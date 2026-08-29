@@ -4,8 +4,9 @@ import { useTexture } from '@react-three/drei'
 import { useEffect, useMemo, type JSX } from 'react'
 import * as THREE from 'three'
 import { enableShadows, asColor, fitToHeight } from './modelUtils'
+import { asset } from '../../../asset'
 
-const BASE = '/models/office-chair/source/extracted/model'
+const BASE = asset('/models/office-chair/source/extracted/model')
 
 export function Chair({ height = 1.1, ...props }: { height?: number } & JSX.IntrinsicElements['group']) {
   const collada = useLoader(ColladaLoader, `${BASE}/model.dae`)
@@ -16,9 +17,10 @@ export function Chair({ height = 1.1, ...props }: { height?: number } & JSX.Intr
     `${BASE}/textures/01 - Default_roughness.jpg`,
   ])
 
-  const model = useMemo(() => collada.scene.clone(true), [collada])
+  const model = useMemo(() => collada?.scene.clone(true) ?? null, [collada])
 
   useEffect(() => {
+    if (!model) return
     asColor(map)
     const material = new THREE.MeshStandardMaterial({
       map,
@@ -39,7 +41,7 @@ export function Chair({ height = 1.1, ...props }: { height?: number } & JSX.Intr
 
   return (
     <group {...props}>
-      <primitive object={model} />
+      {model && <primitive object={model} />}
     </group>
   )
 }

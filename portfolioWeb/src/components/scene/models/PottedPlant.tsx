@@ -1,11 +1,12 @@
 import { useLoader } from '@react-three/fiber'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 import { useTexture } from '@react-three/drei'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, type JSX } from 'react'
 import * as THREE from 'three'
 import { enableShadows, asColor, fitToHeight, originalMaterialName } from './modelUtils'
+import { asset } from '../../../asset'
 
-const BASE = '/models/indoor-plant-with-pot-a'
+const BASE = asset('/models/indoor-plant-with-pot-a')
 
 export function PottedPlant({ height = 0.9, ...props }: { height?: number } & JSX.IntrinsicElements['group']) {
   const fbx = useLoader(FBXLoader, `${BASE}/source/Plant A.fbx`)

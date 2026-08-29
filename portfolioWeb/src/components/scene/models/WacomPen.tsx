@@ -4,8 +4,9 @@ import { useTexture } from '@react-three/drei'
 import { useEffect, useMemo, type JSX } from 'react'
 import * as THREE from 'three'
 import { enableShadows, asColor, fitToHeight } from './modelUtils'
+import { asset } from '../../../asset'
 
-const BASE = '/models/wacom-pen'
+const BASE = asset('/models/wacom-pen')
 
 /** Wacom stylus (single "lambert1" PBR material) — stands upright in the Gojo pen holder. */
 export function WacomPen({ height = 0.17, ...props }: { height?: number } & JSX.IntrinsicElements['group']) {

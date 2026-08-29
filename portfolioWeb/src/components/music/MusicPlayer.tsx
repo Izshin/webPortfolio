@@ -2,6 +2,7 @@ import { useState, type CSSProperties, type PointerEvent } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Pause, Play, Repeat1, Shuffle, SkipBack, SkipForward, Volume2, VolumeX, X } from 'lucide-react'
 import type { MusicPlayer as Player } from './useMusicPlayer'
+import { asset } from '../../asset'
 
 const formatTime = (seconds: number) => {
   if (!Number.isFinite(seconds)) return '0:00'
@@ -93,7 +94,7 @@ export function MusicPlayer({
                     className="glass-player__art-box"
                     style={{ '--rx': `${tilt.rx}deg`, '--ry': `${tilt.ry}deg` } as CSSProperties}
                   >
-                    <img className="glass-player__art-front" src={track.thumbnail} alt="" draggable={false} />
+                    <img className="glass-player__art-front" src={asset(track.thumbnail)} alt="" draggable={false} />
                     <div className="glass-player__art-edge glass-player__art-edge--right" />
                     <div className="glass-player__art-edge glass-player__art-edge--left" />
                     <div className="glass-player__art-edge glass-player__art-edge--top" />

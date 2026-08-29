@@ -4,8 +4,9 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
 import * as THREE from 'three'
 import { fitToHeight } from './modelUtils'
+import { asset } from '../../../asset'
 
-const BASE = '/models/greek-modular-environment/source/extracted/GreekModularEnvironment'
+const BASE = asset('/models/greek-modular-environment/source/extracted/GreekModularEnvironment')
 
 // Leaf/hedge diffuse textures ship a real alpha channel for cutout cards (verified: Palm/Cordyline/Hedge Diff.png are RGBA; Grass/Trunk are opaque RGB).
 const FOLIAGE_ALPHA_PATTERN = /leaf|hedge|cordyline/i

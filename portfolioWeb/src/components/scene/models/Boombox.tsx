@@ -5,8 +5,9 @@ import { useAnimations, useTexture } from '@react-three/drei'
 import { useEffect, useMemo, useRef, type JSX } from 'react'
 import * as THREE from 'three'
 import { enableShadows, asColor, fitToHeight } from './modelUtils'
+import { asset } from '../../../asset'
 
-const BASE = '/models/sci-fi-boombox-hoverboard-animation'
+const BASE = asset('/models/sci-fi-boombox-hoverboard-animation')
 
 /** Clips baked into the FBX: 'Activate' | 'Idle Loop' | 'Deactivate' | 'Idle Fidget 1' | 'Idle Fidget 2'. */
 export function Boombox({

@@ -5,11 +5,12 @@ import { useEffect, useMemo, useRef, useState, type JSX } from 'react'
 import * as THREE from 'three'
 import { enableShadows, asColor, fitToHeight, originalMaterialName } from './modelUtils'
 import { notePagesByLang, type NoteBlock, type NoteLang, type NotePage } from '../../../data/notes'
+import { asset } from '../../../asset'
 
-const BASE = '/models/clip-board'
+const BASE = asset('/models/clip-board')
 const clipboardDividend=100
-const POP_SOUND = '/soundEffects/Pop.mp3'
-const PAGE_TURN_SOUND = '/soundEffects/PageTurn.mp3'
+const POP_SOUND = asset('/soundEffects/Pop.mp3')
+const PAGE_TURN_SOUND = asset('/soundEffects/PageTurn.mp3')
 
 /** The page mesh is 23.76 x 33.1 local units and its UVs span the full 0..1 range. */
 const PAGE_W = 744

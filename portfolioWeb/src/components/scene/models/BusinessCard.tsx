@@ -3,10 +3,11 @@ import { useEffect, useMemo, useState, type JSX } from 'react'
 import * as THREE from 'three'
 import { profile } from '../../../data/profile'
 import type { NoteLang } from '../../../data/notes'
+import { asset } from '../../../asset'
 
-const PHOTO_SRC = '/photos/me.jpg'
+const PHOTO_SRC = asset('/photos/me.jpg')
 /** The file name has spaces, so it has to travel encoded. */
-const BASS_SRC = '/photos/backCover%20Business%20card.png'
+const BASS_SRC = asset('/photos/backCover%20Business%20card.png')
 
 /** 85 x 55 mm card, kept at the texture's aspect so nothing stretches. */
 const FACE_W = 1024
@@ -17,7 +18,7 @@ export const CARD_T = 0.0007
 
 /** Where the bass sits on the back face, in canvas pixels. */
 const BASS_ART = { x: (FACE_W - 810) / 2, y: 130, w: 810, h: Math.round(810 * 0.549) }
-const BASS_SFX = '/soundEffects/bass_sound_effect.mp3'
+const BASS_SFX = asset('/soundEffects/bass_sound_effect.mp3')
 /** Square pad over the middle of the drawing: the only spot that plays the note. */
 const BASS_HIT_PX = 260
 const BASS_HIT_V = 1 - (BASS_ART.y + BASS_ART.h / 2) / FACE_H

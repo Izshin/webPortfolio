@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { tracks } from '../../data/music'
+import { asset } from '../../asset'
 
 const randomIndex = (exclude = -1) => {
   if (tracks.length < 2) return 0
@@ -28,7 +29,7 @@ export function useMusicPlayer() {
 
   const ctxRef = useRef<AudioContext | null>(null)
   const analyserRef = useRef<AnalyserNode | null>(null)
-  const binsRef = useRef<Uint8Array | null>(null)
+  const binsRef = useRef<Uint8Array<ArrayBuffer> | null>(null)
 
   // Deferred until the first play: an AudioContext needs a user gesture, and
   // createMediaElementSource may only ever be called once per <audio> element.
@@ -47,7 +48,7 @@ export function useMusicPlayer() {
     analyser.connect(ctx.destination)
     ctxRef.current = ctx
     analyserRef.current = analyser
-    binsRef.current = new Uint8Array(analyser.frequencyBinCount)
+    binsRef.current = new Uint8Array(new ArrayBuffer(analyser.frequencyBinCount))
   }, [])
 
   /** Reused so the per-frame callers don't allocate. */
@@ -127,7 +128,7 @@ export function useMusicPlayer() {
     if (!audio) return
     const wasPlaying = !audio.paused || playing || autoAdvanceRef.current
     autoAdvanceRef.current = false
-    audio.src = encodeURI(track.src)
+    audio.src = encodeURI(asset(track.src))
     audio.loop = repeatRef.current
     setProgress(0)
     setDuration(0)

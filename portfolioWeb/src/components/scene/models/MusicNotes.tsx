@@ -1,7 +1,6 @@
-import { useMemo, useRef } from 'react'
+import { useMemo, useRef, type JSX } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
-import type { GroupProps } from '@react-three/fiber'
 
 type NoteState = {
   life: number
@@ -56,7 +55,7 @@ export function MusicNotes({
   count = 8,
   size = 0.025,
   ...props
-}: GroupProps & {
+}: JSX.IntrinsicElements['group'] & {
   playing: boolean
   getLevels: () => { bass: number; treble: number }
   count?: number

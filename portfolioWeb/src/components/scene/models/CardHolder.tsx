@@ -5,8 +5,9 @@ import * as THREE from 'three'
 import { enableShadows, fitToHeight } from './modelUtils'
 import { CARD_D, CardBassZone, CardLinks, CardMesh, useCardFaces, type CardFaces } from './BusinessCard'
 import type { NoteLang } from '../../../data/notes'
+import { asset } from '../../../asset'
 
-const MODEL = '/models/card-holder/source/card-holder.glb'
+const MODEL = asset('/models/card-holder/source/card-holder.glb')
 /** The .blend keeps four stacked variants of the tray; only this one is the finished piece. */
 const HOLDER_NODE = 'CardHolder'
 

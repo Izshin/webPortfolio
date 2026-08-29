@@ -1,6 +1,9 @@
 import { useMemo } from 'react'
 import * as THREE from 'three'
 import { useTexture } from '@react-three/drei'
+import { asset } from '../../asset'
+
+const FLOOR_TEXTURE = asset('/models/woodTextureFloor.jpg')
 
 interface FloorProps {
   position?: [number, number, number]
@@ -19,11 +22,11 @@ export function Floor({
   width = 9,
   depth = 5,
   color = '#ffffff',
-  texturePath = '/models/woodTextureFloor.jpg',
+  texturePath = FLOOR_TEXTURE,
   textureTileSize,
 }: FloorProps) {
   // useTexture suspends, so <Floor /> must be rendered inside a <Suspense> boundary.
-  const floorTexture = useTexture(texturePath ?? '/models/woodTextureFloor.jpg')
+  const floorTexture = useTexture(texturePath ?? FLOOR_TEXTURE)
 
   useMemo(() => {
     if (!texturePath) return

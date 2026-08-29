@@ -2,6 +2,9 @@ import { useMemo } from 'react'
 import * as THREE from 'three'
 import { useTexture } from '@react-three/drei'
 import { Window } from './Window'
+import { asset } from '../../asset'
+
+const WALL_TEXTURE = asset('/models/marbeWalltexture.png')
 
 interface WallProps {
   position?: [number, number, number]
@@ -36,13 +39,13 @@ export function Wall({
   showWindow = true,
   windowFrameColor,
   windowGlassColor,
-  texturePath = '/models/marbeWalltexture.png',
+  texturePath = WALL_TEXTURE,
   textureTileSize,
 }: WallProps) {
   const [ox, oy] = windowOffset
 
   // useTexture suspends, so <Wall /> must be rendered inside a <Suspense> boundary.
-  const wallTexture = useTexture(texturePath ?? '/models/marbeWalltexture.png')
+  const wallTexture = useTexture(texturePath ?? WALL_TEXTURE)
 
   useMemo(() => {
     if (!texturePath) return

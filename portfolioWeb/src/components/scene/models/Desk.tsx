@@ -4,8 +4,9 @@ import { useTexture } from '@react-three/drei'
 import { useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 import { enableShadows, asColor, fitToHeight } from './modelUtils'
+import { asset } from '../../../asset'
 
-const BASE = '/models/office-table'
+const BASE = asset('/models/office-table')
 
 export function Desk({ height = 0.75, ...props }: { height?: number }) {
   const fbx = useLoader(FBXLoader, `${BASE}/source/table.fbx`)

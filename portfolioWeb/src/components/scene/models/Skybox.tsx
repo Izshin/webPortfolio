@@ -4,8 +4,9 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 import { useTexture } from '@react-three/drei'
 import * as THREE from 'three'
 import { asColor } from './modelUtils'
+import { asset } from '../../../asset'
 
-const BASE = '/models/skybox-skydays-3'
+const BASE = asset('/models/skybox-skydays-3')
 
 /** Sketchfab "Sky Days" skybox mesh (inside-out dome) — scaled up to enclose the whole scene so sky/clouds show through the window. */
 export function Skybox({ radius = 20, ...props }: { radius?: number } & JSX.IntrinsicElements['group']) {

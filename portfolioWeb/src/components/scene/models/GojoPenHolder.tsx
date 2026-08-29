@@ -1,11 +1,12 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, type JSX } from 'react'
 import { useLoader } from '@react-three/fiber'
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
 import * as THREE from 'three'
 import { enableShadows, fitToHeight } from './modelUtils'
+import { asset } from '../../../asset'
 
-const BASE = '/models/gojoPenHolder'
+const BASE = asset('/models/gojoPenHolder')
 
 /** Gojo figure (flat-color OBJ/MTL, no texture maps) — replaces the plain PenHolder on the desk. */
 export function GojoPenHolder({ height = 0.18, ...props }: { height?: number } & JSX.IntrinsicElements['group']) {

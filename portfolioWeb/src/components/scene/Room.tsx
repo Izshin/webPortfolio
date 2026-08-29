@@ -16,7 +16,6 @@ import { Skybox } from './models/Skybox'
 import { CameraRig } from './CameraRig'
 import { Wall } from './Wall'
 import { Floor } from './Floor'
-import type { SectionId } from '../../data/menu'
 import type { NoteLang } from '../../data/notes'
 
 const BOOMBOX_POSITION: [number, number, number] = [-0.059, 0.74, -0.249]
@@ -94,7 +93,6 @@ const FOCUS_POSES: Record<FocusTarget, typeof BOOMBOX_FOCUS> = {
 }
 
 export function Room({
-  onSelectSection,
   focus,
   onFocus,
   onBackgroundClick,
@@ -105,7 +103,6 @@ export function Room({
   lang,
   onLangChange,
 }: {
-  onSelectSection: (id: SectionId) => void
   focus: FocusTarget | null
   onFocus: (target: FocusTarget | null) => void
   onBackgroundClick: () => void
