@@ -6,14 +6,13 @@ import { Desk } from './models/Desk'
 import { Chair } from './models/Chair'
 import { Bonsai } from './models/Bonsai'
 import { PottedPlant } from './models/PottedPlant'
-import { PenHolder } from './models/PenHolder'
+import { GojoPenHolder } from './models/GojoPenHolder'
 import { ClipBoard } from './models/ClipBoard'
 import { GreekEnvironment } from './models/GreekEnvironment'
 import { Skybox } from './models/Skybox'
 import { CameraRig } from './CameraRig'
 import { Wall } from './Wall'
 import { Floor } from './Floor'
-import { MenuCards } from '../menu/MenuCards'
 import type { SectionId } from '../../data/menu'
 
 export function Room({ onSelectSection }: { onSelectSection: (id: SectionId) => void }) {
@@ -35,14 +34,14 @@ export function Room({ onSelectSection }: { onSelectSection: (id: SectionId) => 
     <Canvas shadows dpr={[1, 2]} gl={{ antialias: true }} performance={{ min: 0.85 }}>
       <PerspectiveCamera
         makeDefault
-        position={[0.45, 1.28, 1]}
+        position={[0.4, 1.13, 0.79]}
         fov={42}
         near={0.1}
         far={40}
-        onUpdate={(cam) => cam.lookAt(-0.1, 0.55, -0.22)}
+        onUpdate={(cam) => cam.lookAt(0.4, 1.13, 0.79)}
       />
       {/* <CameraRig basePosition={[0, 4.9, 2.5]} /> */}
-      <OrbitControls ref={controlsRef} onEnd={logCamera} target={[-0.1, 0.55, -0.22]} />
+      <OrbitControls ref={controlsRef} onEnd={logCamera} target={[-0.08, 0.57, -0.24]} />
 
       <color attach="background" args={['#efe0c4']} />
       {/* <fog attach="fog" args={['#d1e6f8', 10, 15]} /> */}
@@ -88,14 +87,10 @@ export function Room({ onSelectSection }: { onSelectSection: (id: SectionId) => 
         <Bonsai position={[-0.62, 0.74, -0.42]} rotation={[0, 0.4, 0]} />
         <PottedPlant position={[-2.6, 0, -2.4]} rotation={[0, 0.6, 0]} />
         <PottedPlant position={[2.7, 0, -2.2]} height={1.05} rotation={[0, -0.5, 0]} />
-        <PenHolder position={[0.58, 0.74, -0.36]} />
+        <GojoPenHolder position={[0.58, 0.752, -0.36]}  rotation={[0, -0.5, 0]} />
         <ClipBoard position={[0.08, 0.75, 0.1]} rotation={[0, 0.3, 0]} />
         <ContactShadows position={[0, 0.001, 0]} opacity={0.45} scale={12} blur={2} far={4} />
         <Environment preset="apartment" environmentIntensity={0.4} />
-      </Suspense>
-
-      <Suspense fallback={null}>
-        <MenuCards onSelect={onSelectSection} />
       </Suspense>
     </Canvas>
   )
