@@ -15,6 +15,11 @@ type NoteState = {
 
 const PALETTE = ['#ffd66b', '#7fd4ff', '#ff9ad5', '#a5f3a0', '#c4a8ff']
 
+/** Seconds without a bass hit before the track counts as "sparse" and highs may trigger. */
+const SPARSE_AFTER = 0.8
+
+const SILENT = { bass: 0, treble: 0 }
+
 const makeState = (): NoteState => ({
   life: Infinity,
   ttl: 1,
@@ -47,20 +52,22 @@ function Note({ inner }: { inner: (g: THREE.Group | null) => void }) {
 
 export function MusicNotes({
   playing,
-  getLevel,
+  getLevels,
   count = 8,
   size = 0.025,
   ...props
 }: GroupProps & {
   playing: boolean
-  getLevel: () => number
+  getLevels: () => { bass: number; treble: number }
   count?: number
   size?: number
 }) {
   const notes = useRef<(THREE.Group | null)[]>([])
   const states = useMemo(() => Array.from({ length: count }, makeState), [count])
-  const previousLevel = useRef(0)
+  const previousBass = useRef(0)
+  const previousTreble = useRef(0)
   const cooldown = useRef(0)
+  const sinceBass = useRef(SPARSE_AFTER)
   const color = useMemo(() => new THREE.Color(), [])
 
   const spawn = (strength: number) => {
@@ -88,17 +95,30 @@ export function MusicNotes({
 
   useFrame((_, delta) => {
     const dt = Math.min(delta, 0.05)
-    const level = playing ? getLevel() : 0
+    const { bass, treble } = playing ? getLevels() : SILENT
 
     cooldown.current -= dt
+    sinceBass.current += dt
     // Onset detection: a rising edge above the noise floor, rate-limited so a
     // sustained bass note doesn't turn into a stream.
-    if (level > 0.32 && level - previousLevel.current > 0.05 && cooldown.current <= 0) {
-      spawn(level)
-      if (level > 0.6) spawn(level)
+    if (bass > 0.32 && bass - previousBass.current > 0.05 && cooldown.current <= 0) {
+      spawn(bass)
+      if (bass > 0.6) spawn(bass)
       cooldown.current = 0.13
+      sinceBass.current = 0
+    } else if (
+      // Bright-only tracks would otherwise stay silent, but busy ones already have
+      // plenty of notes, so highs only trigger once the bass has gone quiet.
+      sinceBass.current > SPARSE_AFTER &&
+      treble > 0.16 &&
+      treble - previousTreble.current > 0.03 &&
+      cooldown.current <= 0
+    ) {
+      spawn(treble)
+      cooldown.current = 0.55
     }
-    previousLevel.current = level
+    previousBass.current = bass
+    previousTreble.current = treble
 
     states.forEach((state, i) => {
       const group = notes.current[i]

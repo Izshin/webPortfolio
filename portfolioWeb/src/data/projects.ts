@@ -3,6 +3,7 @@ export interface Project {
   name: string
   subtitle: string
   link: string
+  repo?: string
   description: string
   tags: string[]
 }
@@ -12,7 +13,8 @@ export const projects: Project[] = [
     id: 'scubex',
     name: 'Scubex',
     subtitle: "Bachelor's Thesis — Social Media app (React MobX + Spring)",
-    link: 'https://github.com/Izshin',
+    link: 'https://scubex.vercel.app/',
+    repo: 'https://github.com/Izshin/Scubex',
     description:
       'Developed, documented and deployed a full-stack social network for scuba divers (React, Spring Boot, PostgreSQL) on Vercel and Railway, with Google OAuth, species detection via GBIF API, weather forecasting via Open-Meteo and 137 unit tests achieving over 90% code coverage.',
     tags: ['React', 'MobX', 'Spring Boot', 'PostgreSQL', 'OAuth 2.0', 'GBIF API', 'Open-Meteo'],
@@ -21,7 +23,8 @@ export const projects: Project[] = [
     id: 'orquesta-elegidos',
     name: 'Orquesta Elegidos',
     subtitle: 'Web design and development (React + Vite, GitHub Pages)',
-    link: 'https://github.com/Izshin',
+    link: 'https://orquestaelegidos.com/',
+    repo: 'https://github.com/Izshin/Elegidos',
     description:
       "Developed and deployed a website for real client Orquesta Elegidos, an Andalusian music band with over 30 years of experience in its field. Features include news feed updates every 24h, Gmail integration for contact and full UI design.",
     tags: ['React', 'Vite', 'GitHub Pages', 'UI Design'],

@@ -22,7 +22,7 @@ function App() {
           onFocus={setFocus}
           onBackgroundClick={() => setFocus(null)}
           musicPlaying={player.playing}
-          musicLevel={player.getLevel}
+          musicLevels={player.getLevels}
           pageIndex={pageIndex}
           onPageChange={setPageIndex}
         />

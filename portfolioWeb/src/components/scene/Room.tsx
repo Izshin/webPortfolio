@@ -74,7 +74,7 @@ export function Room({
   onFocus,
   onBackgroundClick,
   musicPlaying,
-  musicLevel,
+  musicLevels,
   pageIndex,
   onPageChange,
 }: {
@@ -83,7 +83,7 @@ export function Room({
   onFocus: (target: FocusTarget | null) => void
   onBackgroundClick: () => void
   musicPlaying: boolean
-  musicLevel: () => number
+  musicLevels: () => { bass: number; treble: number }
   pageIndex: number
   onPageChange: (index: number) => void
 }) {
@@ -161,7 +161,7 @@ export function Room({
         />
         <MusicNotes
           playing={musicPlaying}
-          getLevel={musicLevel}
+          getLevels={musicLevels}
           position={[BOOMBOX_POSITION[0], BOOMBOX_POSITION[1] + 0.13, BOOMBOX_POSITION[2]]}
         />
         <ClipBoard
@@ -172,7 +172,9 @@ export function Room({
           onPageChange={onPageChange}
           onClick={(e) => {
             e.stopPropagation()
-            onFocus(focus === 'clipboard' ? null : 'clipboard')
+            // Focus only: while reading, clicks on the board must not close it, or turning
+            // a page near the edge of a chevron would kick you out. Exit is a click outside.
+            onFocus('clipboard')
           }}
           onPointerOver={() => (document.body.style.cursor = 'pointer')}
           onPointerOut={() => (document.body.style.cursor = 'auto')}

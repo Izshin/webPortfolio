@@ -50,15 +50,27 @@ export function useMusicPlayer() {
     binsRef.current = new Uint8Array(analyser.frequencyBinCount)
   }, [])
 
-  /** 0..1 energy of the kick/bass bins — enough to drive a beat trigger. */
-  const getLevel = useCallback(() => {
+  /** Reused so the per-frame callers don't allocate. */
+  const levelsRef = useRef({ bass: 0, treble: 0 })
+
+  /** 0..1 energy of the kick/bass bins and of the bright bins, for beat triggers. */
+  const getLevels = useCallback(() => {
+    const out = levelsRef.current
     const analyser = analyserRef.current
     const bins = binsRef.current
-    if (!analyser || !bins) return 0
+    if (!analyser || !bins) {
+      out.bass = 0
+      out.treble = 0
+      return out
+    }
     analyser.getByteFrequencyData(bins)
-    let sum = 0
-    for (let i = 1; i < 9; i += 1) sum += bins[i]
-    return sum / (8 * 255)
+    let low = 0
+    for (let i = 1; i < 9; i += 1) low += bins[i]
+    let high = 0
+    for (let i = 16; i < 48; i += 1) high += bins[i]
+    out.bass = low / (8 * 255)
+    out.treble = high / (32 * 255)
+    return out
   }, [])
 
   // Read through a ref so toggling shuffle never re-creates `next` (and re-runs the effect below).
@@ -206,14 +218,14 @@ export function useMusicPlayer() {
       next,
       previous,
       seek,
-      getLevel,
+      getLevels,
       setVolume: changeVolume,
       nudgeVolume,
       toggleMute: () => setMuted((m) => !m),
       toggleShuffle,
       toggleRepeat,
     }),
-    [track, playing, progress, duration, volume, muted, shuffle, repeat, toggle, next, previous, seek, getLevel, nudgeVolume, changeVolume, toggleShuffle, toggleRepeat],
+    [track, playing, progress, duration, volume, muted, shuffle, repeat, toggle, next, previous, seek, getLevels, nudgeVolume, changeVolume, toggleShuffle, toggleRepeat],
   )
 }
 

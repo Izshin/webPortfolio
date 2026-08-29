@@ -141,7 +141,8 @@ export function MusicPlayer({
                   onClick={player.toggle}
                   aria-label={playing ? 'Pause' : 'Play'}
                 >
-                  {playing ? <Pause size={22} /> : <Play size={22} />}
+                  {/* 24 (= the icons' viewBox) keeps the strokes on whole pixels; 22 scaled the two pause bars unevenly. */}
+                  {playing ? <Pause size={24} /> : <Play size={24} />}
                 </button>
                 <button type="button" onClick={player.next} aria-label="Next track">
                   <SkipForward size={18} />
