@@ -102,20 +102,12 @@ function drawNote(
   return texture
 }
 
-type PageFrame = {
-  x: number
-  y: number
-  width: number
-  depth: number
-  hingeZ: number
-  /** Underside of the board, so a sheet can swing around the edge and land flat below it. */
-  bottomY: number
-}
+type PageFrame = { x: number; y: number; width: number; depth: number; hingeZ: number }
 
 /** Vertical spacing between stacked sheets, in world units. */
 const SHEET_GAP = 0.0004
-/** Peak bend mid-turn, in full circles across the sheet's length. */
-const ROLL_TURNS = 0.55
+/** How many full circles the sheet wraps onto itself once it is completely rolled. */
+const ROLL_TURNS = 1.15
 
 function smoothstep(edge0: number, edge1: number, x: number) {
   const t = THREE.MathUtils.clamp((x - edge0) / (edge1 - edge0), 0, 1)
@@ -123,8 +115,8 @@ function smoothstep(edge0: number, edge1: number, x: number) {
 }
 
 /**
- * One sheet, hinged on the clip edge. It rolls itself into an even scroll and then swings
- * a half turn over the clip so the scroll ends up tucked under the board.
+ * One sheet, hinged on the far edge from the clip. It rolls itself into an even scroll and
+ * then swings a half turn around that edge so the scroll ends up tucked under the board.
  */
 function PageSheet({
   frame,
@@ -164,14 +156,17 @@ function PageSheet({
     if (Math.abs(t - lastProgress.current) < 0.0004) return
     lastProgress.current = t
 
-    // Two overlapping beats: the sheet peels off the clip while rolling itself up, so the
-    // finished scroll is already tucked under the board by the time it stops moving.
-    const roll = Math.sin(Math.PI * t)
-    const tuck = smoothstep(0, 1, t)
-    group.rotation.x = tuck * Math.PI
+    // Two overlapping beats: the sheet rolls itself up first, then the finished scroll
+    // swings over the clip and tucks underneath. It never unrolls, so it stays a scroll.
+    const roll = smoothstep(0, 0.6, t)
+    const tuck = smoothstep(0.3, 1, t)
+    // Negative, so the sheet lifts away from the board on its way over rather than diving.
+    group.rotation.x = -tuck * Math.PI
+    group.position.y = frame.y + offset + Math.sin(Math.PI * t) * frame.depth * 0.06
 
     // Roll onto a cylinder whose axis is the hinge: a point s along the page maps to the
-    // arc (sin(ks)/k, (1-cos(ks))/k). k is the curvature, so 1/k is the bend's radius.
+    // arc (sin(ks)/k, (1-cos(ks))/k). k is the curvature, so 1/k is the scroll's radius.
+    // s runs from the bottom edge upward, which is where the sheet peels from.
     const half = frame.depth / 2
     const k = (roll * ROLL_TURNS * Math.PI * 2) / frame.depth
     const position = geometry.attributes.position
@@ -183,30 +178,23 @@ function PageSheet({
         position.setZ(i, 0)
         continue
       }
-      const s = restY + half
-      position.setY(i, -half + Math.sin(k * s) / k)
+      const s = half - restY
+      position.setY(i, half - Math.sin(k * s) / k)
       position.setZ(i, (1 - Math.cos(k * s)) / k)
     }
     position.needsUpdate = true
     geometry.computeVertexNormals()
   })
 
-  // The hinge sits halfway down the board's edge, not on the page surface, so a half turn
-  // lands the sheet exactly on the underside instead of leaving it hovering above the clip.
-  const pivotY = (frame.y + frame.bottomY) / 2
-  const arm = frame.y + offset - pivotY
-
   return (
-    <group ref={pivot} position={[frame.x, pivotY, frame.hingeZ]}>
-      <group position={[0, arm, 0]}>
-        <mesh geometry={geometry} position={[0, 0, -frame.depth / 2]} rotation={[-Math.PI / 2, 0, 0]} castShadow>
-          <meshStandardMaterial map={map ?? paper} roughness={0.9} side={THREE.FrontSide} />
-        </mesh>
-        {/* Same geometry, back faces only: a flipped page shows blank paper, not mirrored ink. */}
-        <mesh geometry={geometry} position={[0, 0, -frame.depth / 2]} rotation={[-Math.PI / 2, 0, 0]}>
-          <meshStandardMaterial map={paper} roughness={0.9} side={THREE.BackSide} />
-        </mesh>
-      </group>
+    <group ref={pivot} position={[frame.x, frame.y + offset, frame.hingeZ - frame.depth]}>
+      <mesh geometry={geometry} position={[0, 0, frame.depth / 2]} rotation={[-Math.PI / 2, 0, 0]} castShadow>
+        <meshStandardMaterial map={map ?? paper} roughness={0.9} side={THREE.FrontSide} />
+      </mesh>
+      {/* Same geometry, back faces only: a flipped page shows blank paper, not mirrored ink. */}
+      <mesh geometry={geometry} position={[0, 0, frame.depth / 2]} rotation={[-Math.PI / 2, 0, 0]}>
+        <meshStandardMaterial map={paper} roughness={0.9} side={THREE.BackSide} />
+      </mesh>
     </group>
   )
 }
