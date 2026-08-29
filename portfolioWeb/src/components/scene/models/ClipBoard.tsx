@@ -4,10 +4,11 @@ import { useTexture } from '@react-three/drei'
 import { useEffect, useMemo, useRef, useState, type JSX } from 'react'
 import * as THREE from 'three'
 import { enableShadows, asColor, fitToHeight, originalMaterialName } from './modelUtils'
-import { notePages, type NoteBlock, type NotePage } from '../../../data/notes'
+import { notePagesByLang, type NoteBlock, type NoteLang, type NotePage } from '../../../data/notes'
 
 const BASE = '/models/clip-board'
 const clipboardDividend=100
+const POP_SOUND = '/soundEffects/Pop.mp3'
 
 /** The page mesh is 23.76 x 33.1 local units and its UVs span the full 0..1 range. */
 const PAGE_W = 744
@@ -40,6 +41,12 @@ const FONT_SPECS = [
 
 const MARGIN_X = 78
 const CONTENT_W = PAGE_W - MARGIN_X * 2
+
+/** Language toggle, top right of the first page. */
+const FLAG_W = 46
+const FLAG_H = 30
+const FLAG_TOP = 104
+const FLAG_GAP = 12
 
 function drawChevron(ctx: CanvasRenderingContext2D, cx: number, cy: number, dir: 1 | -1) {
   const r = 32
@@ -97,20 +104,148 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
   ctx.closePath()
 }
 
-/** A clickable region of the sheet, in canvas pixels. */
-type LinkRect = { url: string; x0: number; y0: number; x1: number; y1: number }
+/** Splits `plain [label](url) plain` into styled runs. */
+function parseRuns(source: string) {
+  const runs: { text: string; url?: string }[] = []
+  const pattern = /\[([^\]]+)\]\(([^)]+)\)/g
+  let last = 0
+  let match: RegExpExecArray | null
+  while ((match = pattern.exec(source))) {
+    if (match.index > last) runs.push({ text: source.slice(last, match.index) })
+    runs.push({ text: match[1], url: match[2] })
+    last = match.index + match[0].length
+  }
+  if (last < source.length) runs.push({ text: source.slice(last) })
+  return runs
+}
+
+/**
+ * Word-wraps text that may carry inline links, painting those in blue with an underline and
+ * collecting their hit rect. Returns the y just past the last line.
+ */
+function drawRich(
+  ctx: CanvasRenderingContext2D,
+  source: string,
+  x: number,
+  y: number,
+  maxWidth: number,
+  lineHeight: number,
+  color: string,
+  paint: boolean,
+  links: LinkRect[],
+) {
+  const spaceWidth = ctx.measureText(' ').width
+  let cx = x
+  let first = true
+
+  for (const run of parseRuns(source)) {
+    for (const word of run.text.split(/\s+/).filter(Boolean)) {
+      const width = ctx.measureText(word).width
+      if (!first) {
+        if (cx + spaceWidth + width > x + maxWidth) {
+          y += lineHeight
+          cx = x
+        } else {
+          cx += spaceWidth
+        }
+      }
+      if (paint) {
+        ctx.fillStyle = run.url ? INK.blue : color
+        ctx.fillText(word, cx, y)
+        if (run.url) {
+          ctx.fillRect(cx, y + 6, width, 2)
+          links.push({ url: run.url, x0: cx - 4, y0: y - lineHeight * 0.72, x1: cx + width + 4, y1: y + 12 })
+        }
+      }
+      cx += width
+      first = false
+    }
+  }
+  return y + lineHeight
+}
+
+/** A clickable region of the sheet, in canvas pixels. Either opens a url or picks a language. */
+type LinkRect = { url?: string; lang?: NoteLang; x0: number; y0: number; x1: number; y1: number }
 type PaintedPage = { texture: THREE.CanvasTexture; links: LinkRect[] }
+
+function drawSpainFlag(ctx: CanvasRenderingContext2D, x: number, y: number, active: boolean) {
+  ctx.fillStyle = active ? '#c60b1e' : '#b9bec8'
+  ctx.fillRect(x, y, FLAG_W, FLAG_H)
+  ctx.fillStyle = active ? '#ffc400' : '#e2e5ea'
+  ctx.fillRect(x, y + FLAG_H * 0.25, FLAG_W, FLAG_H * 0.5)
+}
+
+function drawUkFlag(ctx: CanvasRenderingContext2D, x: number, y: number, active: boolean) {
+  const white = active ? '#ffffff' : '#eef0f3'
+  const red = active ? '#c8102e' : '#c6cbd4'
+  ctx.fillStyle = active ? '#012169' : '#aab0bb'
+  ctx.fillRect(x, y, FLAG_W, FLAG_H)
+  for (const [color, thickness] of [
+    [white, FLAG_H * 0.28],
+    [red, FLAG_H * 0.12],
+  ] as const) {
+    ctx.strokeStyle = color
+    ctx.lineWidth = thickness
+    ctx.beginPath()
+    ctx.moveTo(x, y)
+    ctx.lineTo(x + FLAG_W, y + FLAG_H)
+    ctx.moveTo(x + FLAG_W, y)
+    ctx.lineTo(x, y + FLAG_H)
+    ctx.stroke()
+  }
+  for (const [color, thickness] of [
+    [white, FLAG_H * 0.36],
+    [red, FLAG_H * 0.2],
+  ] as const) {
+    ctx.fillStyle = color
+    ctx.fillRect(x, y + (FLAG_H - thickness) / 2, FLAG_W, thickness)
+    ctx.fillRect(x + (FLAG_W - thickness) / 2, y, thickness, FLAG_H)
+  }
+}
+
+/** The active flag keeps its colours, the other one is greyed out. */
+function drawLanguageToggle(ctx: CanvasRenderingContext2D, lang: NoteLang, links: LinkRect[]) {
+  const enX = PAGE_W - MARGIN_X - FLAG_W
+  const esX = enX - FLAG_GAP - FLAG_W
+
+  for (const item of [
+    { x: esX, lang: 'es' as const },
+    { x: enX, lang: 'en' as const },
+  ]) {
+    const active = item.lang === lang
+    ctx.save()
+    roundRect(ctx, item.x, FLAG_TOP, FLAG_W, FLAG_H, 4)
+    ctx.clip()
+    if (item.lang === 'es') drawSpainFlag(ctx, item.x, FLAG_TOP, active)
+    else drawUkFlag(ctx, item.x, FLAG_TOP, active)
+    ctx.restore()
+
+    roundRect(ctx, item.x, FLAG_TOP, FLAG_W, FLAG_H, 4)
+    ctx.strokeStyle = active ? INK.blue : 'rgba(18, 35, 63, 0.2)'
+    ctx.lineWidth = active ? 2.5 : 1.5
+    ctx.stroke()
+
+    links.push({
+      lang: active ? (item.lang === 'es' ? 'en' : 'es') : item.lang,
+      x0: item.x - 6,
+      y0: FLAG_TOP - 8,
+      x1: item.x + FLAG_W + 6,
+      y1: FLAG_TOP + FLAG_H + 8,
+    })
+  }
+}
 
 /**
  * Paints one CV page over the paper diffuse. The page's v axis runs from the clip end (v=0)
  * to the far end (v=1) and three flips textures vertically, so drawing the canvas the
  * normal way up already reads correctly from the default camera.
  */
-export function drawNote(
+function drawNote(
   paper: CanvasImageSource,
   page: NotePage,
   index: number,
   total: number,
+  lang: NoteLang,
 ): PaintedPage | null {
   const canvas = document.createElement('canvas')
   canvas.width = PAGE_W
@@ -123,6 +258,8 @@ export function drawNote(
 
   const links: LinkRect[] = []
   let y = 138
+
+  if (index === 0) drawLanguageToggle(ctx, lang, links)
 
   if (page.eyebrow) {
     ctx.font = `600 21px ${FONT_BODY}`
@@ -144,19 +281,17 @@ export function drawNote(
   }
 
   y += 6
+  // The accent rule doubles as a progress bar: full width on the last page.
+  const progress = (CONTENT_W * (index + 1)) / total
   ctx.fillStyle = INK.blue
-  ctx.fillRect(MARGIN_X, y, 88, 5)
+  ctx.fillRect(MARGIN_X, y, progress, 5)
   ctx.fillStyle = INK.hairline
-  ctx.fillRect(MARGIN_X + 88, y + 2, CONTENT_W - 88, 1.5)
+  ctx.fillRect(MARGIN_X + progress, y + 2, CONTENT_W - progress, 1.5)
   y += 46
 
   if (page.subtitle) {
     ctx.font = `500 24px ${FONT_BODY}`
-    ctx.fillStyle = INK.grey
-    for (const line of wrapText(ctx, page.subtitle, CONTENT_W)) {
-      ctx.fillText(line, MARGIN_X, y)
-      y += 33
-    }
+    y = drawRich(ctx, page.subtitle, MARGIN_X, y, CONTENT_W, 33, INK.grey, true, links)
     y += 14
   }
 
@@ -221,11 +356,7 @@ function layoutBlocks(
       case 'text': {
         const size = block.kind === 'lead' ? 27 : 25
         ctx.font = `${block.kind === 'lead' ? 500 : 400} ${size}px ${FONT_BODY}`
-        ctx.fillStyle = INK.black
-        for (const line of wrapText(ctx, block.text, CONTENT_W)) {
-          if (paint) ctx.fillText(line, MARGIN_X, y)
-          y += size + 11
-        }
+        y = drawRich(ctx, block.text, MARGIN_X, y, CONTENT_W, size + 11, INK.black, paint, links)
         y += 6
         break
       }
@@ -248,31 +379,37 @@ function layoutBlocks(
       }
       case 'meta': {
         ctx.font = `500 22px ${FONT_BODY}`
-        ctx.fillStyle = INK.grey
-        for (const line of wrapText(ctx, block.text, CONTENT_W)) {
-          if (paint) ctx.fillText(line, MARGIN_X, y)
-          y += 30
-        }
+        y = drawRich(ctx, block.text, MARGIN_X, y, CONTENT_W, 30, INK.grey, paint, links)
         y += 8
+        break
+      }
+      case 'hint': {
+        ctx.font = `500 23px ${FONT_BODY}`
+        ctx.fillStyle = INK.blue
+        for (const line of wrapText(ctx, block.text, CONTENT_W)) {
+          if (paint) {
+            ctx.fillText(line, MARGIN_X, y)
+            const at = block.underline ? line.indexOf(block.underline) : -1
+            if (at >= 0 && block.underline) {
+              const x = MARGIN_X + ctx.measureText(line.slice(0, at)).width
+              ctx.fillRect(x, y + 6, ctx.measureText(block.underline).width, 2)
+            }
+          }
+          y += 32
+        }
+        y += 6
         break
       }
       case 'bullet': {
         const indent = 32
         ctx.font = `400 25px ${FONT_BODY}`
-        const lines = wrapText(ctx, block.text, CONTENT_W - indent)
-        lines.forEach((line, i) => {
-          if (paint) {
-            if (i === 0) {
-              ctx.fillStyle = INK.blue
-              ctx.beginPath()
-              ctx.arc(MARGIN_X + 7, y - 8, 4.5, 0, Math.PI * 2)
-              ctx.fill()
-            }
-            ctx.fillStyle = INK.black
-            ctx.fillText(line, MARGIN_X + indent, y)
-          }
-          y += 34
-        })
+        if (paint) {
+          ctx.fillStyle = INK.blue
+          ctx.beginPath()
+          ctx.arc(MARGIN_X + 7, y - 8, 4.5, 0, Math.PI * 2)
+          ctx.fill()
+        }
+        y = drawRich(ctx, block.text, MARGIN_X + indent, y, CONTENT_W - indent, 34, INK.black, paint, links)
         y += 6
         break
       }
@@ -299,37 +436,6 @@ function layoutBlocks(
           x += width + gap
         }
         y += height + 14
-        break
-      }
-      case 'links': {
-        ctx.font = `600 25px ${FONT_BODY}`
-        for (const item of block.items) {
-          const width = ctx.measureText(item.label).width
-          if (paint) {
-            ctx.strokeStyle = INK.blue
-            ctx.lineWidth = 3
-            ctx.lineCap = 'round'
-            ctx.lineJoin = 'round'
-            ctx.beginPath()
-            ctx.moveTo(MARGIN_X + 4, y - 17)
-            ctx.lineTo(MARGIN_X + 13, y - 8)
-            ctx.lineTo(MARGIN_X + 4, y + 1)
-            ctx.stroke()
-
-            ctx.fillStyle = INK.blue
-            ctx.fillText(item.label, MARGIN_X + 28, y)
-            ctx.fillRect(MARGIN_X + 28, y + 7, width, 2.5)
-            links.push({
-              url: item.url,
-              x0: MARGIN_X - 4,
-              y0: y - 28,
-              x1: MARGIN_X + 28 + width + 10,
-              y1: y + 14,
-            })
-          }
-          y += 42
-        }
-        y += 4
         break
       }
     }
@@ -386,6 +492,16 @@ function PageSheet({
   const pivot = useRef<THREE.Group>(null)
   const progress = useRef(lifted ? 1 : 0)
   const lastProgress = useRef(-1)
+  // Swapping the language swaps the texture, so the sheet gives a small settle instead of
+  // changing in place with no warning.
+  const swap = useRef(0)
+  const lastSwap = useRef(0)
+  const lastMap = useRef<THREE.Texture | null>(null)
+
+  useEffect(() => {
+    if (lastMap.current && lastMap.current !== map) swap.current = 1
+    lastMap.current = map
+  }, [map])
 
   const geometry = useMemo(() => {
     const g = new THREE.PlaneGeometry(frame.width, frame.depth, 1, 56)
@@ -398,15 +514,17 @@ function PageSheet({
   useFrame((_, delta) => {
     const group = pivot.current
     if (!group) return
-    progress.current = THREE.MathUtils.damp(
-      progress.current,
-      lifted ? 1 : 0,
-      3.2,
-      Math.min(delta, 0.05),
-    )
+    const dt = Math.min(delta, 0.05)
+    progress.current = THREE.MathUtils.damp(progress.current, lifted ? 1 : 0, 3.2, dt)
+    swap.current = swap.current > 0.002 ? THREE.MathUtils.damp(swap.current, 0, 9, dt) : 0
     const t = progress.current
-    if (Math.abs(t - lastProgress.current) < 0.0004) return
+    if (
+      Math.abs(t - lastProgress.current) < 0.0004 &&
+      Math.abs(swap.current - lastSwap.current) < 0.0004
+    )
+      return
     lastProgress.current = t
+    lastSwap.current = swap.current
 
     // Two overlapping beats: the sheet rolls itself up first, then the finished scroll
     // swings over the clip and tucks underneath. It never unrolls, so it stays a scroll.
@@ -414,7 +532,9 @@ function PageSheet({
     const tuck = smoothstep(0.3, 1, t)
     // Negative, so the sheet lifts away from the board on its way over rather than diving.
     group.rotation.x = -tuck * Math.PI
-    group.position.y = frame.y + offset + tuck * ROLL_RADIUS * frame.depth * 0.06
+    group.position.y =
+      frame.y + offset + tuck * ROLL_RADIUS * frame.depth * 0.06 + swap.current * 0.0025
+    group.scale.setScalar(1 + swap.current * 0.014)
 
     // Roll onto a cylinder whose axis is the hinge: a point s along the page maps to the
     // arc (sin(ks)/k, (1-cos(ks))/k). k is the curvature, so 1/k is the scroll's radius.
@@ -453,14 +573,12 @@ function PageSheet({
 
 export function ClipBoard({
   height = 1 / clipboardDividend,
-  pages = notePages,
   pageIndex = 0,
   interactive = false,
   onPageChange,
   ...props
 }: {
   height?: number
-  pages?: NotePage[]
   pageIndex?: number
   interactive?: boolean
   onPageChange?: (index: number) => void
@@ -473,15 +591,37 @@ export function ClipBoard({
 
   const model = useMemo(() => fbx.clone(true), [fbx])
   const [frame, setFrame] = useState<PageFrame | null>(null)
+  const [lang, setLang] = useState<NoteLang>('es')
+  const popRef = useRef<HTMLAudioElement | null>(null)
   const fontsReady = useFontsReady()
 
+  const handleLang = (next: NoteLang) => {
+    setLang((current) => {
+      if (next !== current) {
+        if (!popRef.current) popRef.current = new Audio(POP_SOUND)
+        popRef.current.currentTime = 0
+        popRef.current.play().catch(() => {})
+      }
+      return next
+    })
+  }
+
+  // Both languages are painted up front, so switching only swaps an already built texture.
   const painted = useMemo(() => {
     const paper = textures.pageMap.image as CanvasImageSource | undefined
-    if (!paper) return []
-    return pages.map((p, i) => drawNote(paper, p, i, pages.length))
-  }, [textures.pageMap, pages, fontsReady])
+    const build = (l: NoteLang) =>
+      paper ? notePagesByLang[l].map((p, i) => drawNote(paper, p, i, notePagesByLang[l].length, l)) : []
+    return { es: build('es'), en: build('en') }
+  }, [textures.pageMap, fontsReady])
 
-  useEffect(() => () => painted.forEach((p) => p?.texture.dispose()), [painted])
+  const sheets = painted[lang]
+
+  useEffect(
+    () => () => {
+      for (const set of Object.values(painted)) set.forEach((p) => p?.texture.dispose())
+    },
+    [painted],
+  )
 
   useEffect(() => {
     asColor(textures.boardMap)
@@ -524,7 +664,7 @@ export function ClipBoard({
     <group {...props}>
       <primitive object={model} />
       {frame &&
-        painted.map((page, i) => (
+        sheets.map((page, i) => (
           <PageSheet
             key={i}
             frame={frame}
@@ -532,19 +672,19 @@ export function ClipBoard({
             paper={textures.pageMap}
             lifted={i < pageIndex}
             // Top of the stack first, so page 0 sits highest and flips off on its own.
-            offset={(painted.length - i) * SHEET_GAP}
+            offset={(sheets.length - i) * SHEET_GAP}
           />
         ))}
       {frame && interactive && (
         <>
-          {painted[pageIndex]?.links.map((rect, i) => (
-            <LinkZone key={i} frame={frame} rect={rect} stack={painted.length} />
+          {sheets[pageIndex]?.links.map((rect, i) => (
+            <LinkZone key={i} frame={frame} rect={rect} stack={sheets.length} onLang={handleLang} />
           ))}
-          {onPageChange && pageIndex < pages.length - 1 && (
+          {onPageChange && pageIndex < sheets.length - 1 && (
             <ArrowZone
               frame={frame}
               u={ARROW_NEXT_U}
-              stack={painted.length}
+              stack={sheets.length}
               onSelect={() => onPageChange(pageIndex + 1)}
             />
           )}
@@ -552,7 +692,7 @@ export function ClipBoard({
             <ArrowZone
               frame={frame}
               u={ARROW_PREV_U}
-              stack={painted.length}
+              stack={sheets.length}
               onSelect={() => onPageChange(pageIndex - 1)}
             />
           )}
@@ -567,7 +707,17 @@ export function ClipBoard({
  * UVs, and textures are flipped vertically, so canvas row v sits (1 - v) of the page depth
  * back from the clip edge.
  */
-function LinkZone({ frame, rect, stack }: { frame: PageFrame; rect: LinkRect; stack: number }) {
+function LinkZone({
+  frame,
+  rect,
+  stack,
+  onLang,
+}: {
+  frame: PageFrame
+  rect: LinkRect
+  stack: number
+  onLang: (lang: NoteLang) => void
+}) {
   const u0 = rect.x0 / PAGE_W
   const u1 = rect.x1 / PAGE_W
   const v0 = rect.y0 / PAGE_H
@@ -583,7 +733,8 @@ function LinkZone({ frame, rect, stack }: { frame: PageFrame; rect: LinkRect; st
       rotation={[-Math.PI / 2, 0, 0]}
       onClick={(e) => {
         e.stopPropagation()
-        window.open(rect.url, '_blank', 'noopener,noreferrer')
+        if (rect.url) window.open(rect.url, '_blank', 'noopener,noreferrer')
+        else if (rect.lang) onLang(rect.lang)
       }}
       onPointerDown={(e) => e.stopPropagation()}
       onPointerOver={(e) => {

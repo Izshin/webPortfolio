@@ -12,7 +12,7 @@ export function useMusicPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const [index, setIndex] = useState(() => randomIndex())
   const [playing, setPlaying] = useState(false)
-  const [volume, setVolume] = useState(0.6)
+  const [volume, setVolume] = useState(0.3)
   const [muted, setMuted] = useState(false)
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(0)
@@ -92,12 +92,19 @@ export function useMusicPlayer() {
     [],
   )
 
+  // An ended track leaves the element paused (and some browsers also fire `pause`),
+  // so the src effect below can't tell an auto-advance from a deliberate stop without this.
+  const autoAdvanceRef = useRef(false)
+
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
     const onTime = () => setProgress(audio.currentTime)
     const onMeta = () => setDuration(audio.duration || 0)
-    const onEnded = () => next()
+    const onEnded = () => {
+      autoAdvanceRef.current = true
+      next()
+    }
     const onPlay = () => setPlaying(true)
     const onPause = () => setPlaying(false)
     audio.addEventListener('timeupdate', onTime)
@@ -118,7 +125,8 @@ export function useMusicPlayer() {
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
-    const wasPlaying = !audio.paused || playing
+    const wasPlaying = !audio.paused || playing || autoAdvanceRef.current
+    autoAdvanceRef.current = false
     audio.src = encodeURI(track.src)
     audio.loop = repeatRef.current
     setProgress(0)
