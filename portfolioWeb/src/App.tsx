@@ -1,7 +1,6 @@
 import { Suspense, useState } from 'react'
 import { Room, type FocusTarget } from './components/scene/Room'
 import { DetailOverlay } from './components/overlay/DetailOverlay'
-import { Dock } from './components/dock/Dock'
 import { MusicPlayer } from './components/music/MusicPlayer'
 import { useMusicPlayer } from './components/music/useMusicPlayer'
 import type { SectionId } from './data/menu'
