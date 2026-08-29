@@ -8,21 +8,100 @@ import { PottedPlant } from './models/PottedPlant'
 import { GojoPenHolder } from './models/GojoPenHolder'
 import { WacomPen } from './models/WacomPen'
 import { Boombox } from './models/Boombox'
+import { MusicNotes } from './models/MusicNotes'
 import { ClipBoard } from './models/ClipBoard'
 import { GreekEnvironment } from './models/GreekEnvironment'
 import { Skybox } from './models/Skybox'
 import { CameraRig } from './CameraRig'
-import { DevTransform } from './DevTransform'
 import { Wall } from './Wall'
 import { Floor } from './Floor'
 import type { SectionId } from '../../data/menu'
 
-export function Room({ onSelectSection }: { onSelectSection: (id: SectionId) => void }) {
+const BOOMBOX_POSITION: [number, number, number] = [-0.059, 0.74, -0.249]
+const BOOMBOX_ROTATION_Y = -1.7
+const FOCUS_DISTANCE = 0.55
+/** Camera height and aim height, both relative to the boombox's base. */
+const FOCUS_HEIGHT = 0.16
+const FOCUS_AIM_HEIGHT = 0.21
+
+// Direction the boombox faces: its front is the model's local -X, i.e. a quarter turn back
+// from the group's own yaw. Putting the camera on that normal gives a dead-on, perpendicular
+// view; aiming above it keeps the model along the bottom edge, leaving room for the panel.
+const FRONT_ANGLE = BOOMBOX_ROTATION_Y + Math.PI / 2
+const FRONT_X = Math.sin(FRONT_ANGLE)
+const FRONT_Z = Math.cos(FRONT_ANGLE)
+const BOOMBOX_FOCUS = {
+  position: [
+    BOOMBOX_POSITION[0] + FRONT_X * FOCUS_DISTANCE,
+    BOOMBOX_POSITION[1] + FOCUS_HEIGHT,
+    BOOMBOX_POSITION[2] + FRONT_Z * FOCUS_DISTANCE,
+  ] as [number, number, number],
+  lookAt: [
+    BOOMBOX_POSITION[0],
+    BOOMBOX_POSITION[1] + FOCUS_AIM_HEIGHT,
+    BOOMBOX_POSITION[2],
+  ] as [number, number, number],
+}
+
+const CLIPBOARD_POSITION: [number, number, number] = [0.009, 0.75, 0.165]
+const CLIPBOARD_ROTATION_Y = 0.39
+const CLIPBOARD_DISTANCE = 0.46
+// Steep, but well short of vertical: near the pole the up vector barely constrains the roll,
+// so lookAt swings the horizon around as the camera settles. Backing off to ~62 degrees keeps
+// the framing overhead and the arrival steady.
+const CLIPBOARD_PITCH = (62 * Math.PI) / 180
+// Offset along the board's own +Z, not the world's, so screen-up follows the page and the
+// writing reads straight.
+const CLIPBOARD_FOCUS = {
+  position: [
+    CLIPBOARD_POSITION[0] + Math.sin(CLIPBOARD_ROTATION_Y) * Math.cos(CLIPBOARD_PITCH) * CLIPBOARD_DISTANCE,
+    CLIPBOARD_POSITION[1] + Math.sin(CLIPBOARD_PITCH) * CLIPBOARD_DISTANCE,
+    CLIPBOARD_POSITION[2] + Math.cos(CLIPBOARD_ROTATION_Y) * Math.cos(CLIPBOARD_PITCH) * CLIPBOARD_DISTANCE,
+  ] as [number, number, number],
+  lookAt: [...CLIPBOARD_POSITION] as [number, number, number],
+}
+
+export type FocusTarget = 'boombox' | 'clipboard'
+
+const FOCUS_POSES: Record<FocusTarget, typeof BOOMBOX_FOCUS> = {
+  boombox: BOOMBOX_FOCUS,
+  clipboard: CLIPBOARD_FOCUS,
+}
+
+export function Room({
+  onSelectSection,
+  focus,
+  onFocus,
+  onBackgroundClick,
+  musicPlaying,
+  musicLevel,
+  pageIndex,
+  onPageChange,
+}: {
+  onSelectSection: (id: SectionId) => void
+  focus: FocusTarget | null
+  onFocus: (target: FocusTarget | null) => void
+  onBackgroundClick: () => void
+  musicPlaying: boolean
+  musicLevel: () => number
+  pageIndex: number
+  onPageChange: (index: number) => void
+}) {
   return (
-    <Canvas shadows dpr={[1, 2]} gl={{ antialias: true }} performance={{ min: 0.85 }}>
+    <Canvas
+      shadows
+      dpr={[1, 2]}
+      gl={{ antialias: true }}
+      performance={{ min: 0.85 }}
+      onPointerMissed={onBackgroundClick}
+    >
       <PerspectiveCamera makeDefault position={[0.4, 1.13, 0.79]} fov={42} near={0.1} far={40} />
       {/* Fixed framing; CameraRig only adds a small pointer-driven drift around it. */}
-      <CameraRig basePosition={[0.4, 1.13, 0.79]} lookAt={[-0.08, 0.57, -0.24]} />
+      <CameraRig
+        basePosition={[0.4, 1.13, 0.79]}
+        lookAt={[-0.08, 0.57, -0.24]}
+        focus={focus ? FOCUS_POSES[focus] : null}
+      />
 
       <color attach="background" args={['#efe0c4']} />
       {/* <fog attach="fog" args={['#d1e6f8', 10, 15]} /> */}
@@ -49,7 +128,7 @@ export function Room({ onSelectSection }: { onSelectSection: (id: SectionId) => 
       <Suspense fallback={null}>
         <Wall position={[-0.4, 1.8, -2.6]} windowWidth={3} />
         <Wall
-          position={[-4.4, 1.8, -0.05]}
+          position={[-3.8, 1.8, -0.05]}
           rotation={[0, Math.PI / 2, 0]}
           width={5.1}
           showWindow={false}
@@ -64,23 +143,40 @@ export function Room({ onSelectSection }: { onSelectSection: (id: SectionId) => 
       <Suspense fallback={null}>
         <Desk/>
         <Chair position={[-0.3, 0, 0.5]} rotation={[0, Math.PI * 0.92, 0]} />
-        <DevTransform label="Bonsai" position={[-0.618, 0.74, -0.178]} rotation={[0, 0.63, 0]}>
-          <Bonsai />
-        </DevTransform>
+        <Bonsai position={[-0.618, 0.74, -0.178]} rotation={[0, 0.63, 0]} />
         <PottedPlant position={[-2.6, 0, -2.4]} rotation={[0, 0.6, 0]} />
         <PottedPlant position={[1.2, 0, -2.2]} height={1.05} rotation={[0, -0.5, 0]} />
-        <DevTransform label="GojoPenHolder" position={[0.505, 0.752, -0.142]} rotation={[0, -0.5, 0]}>
-          <GojoPenHolder />
-        </DevTransform>
-        <DevTransform label="WacomPen" position={[0.581, 0.92, -0.113]} rotation={[Math.PI / 2, 0, Math.PI / 1.5]}>
-          <WacomPen />
-        </DevTransform>
-        <DevTransform label="Boombox" position={[-0.059, 0.74, -0.249]} rotation={[0, -1.7, 0]}>
-          <Boombox />
-        </DevTransform>
-        <DevTransform label="ClipBoard" position={[0.009, 0.75, 0.165]} rotation={[0, 0.39, 0]}>
-          <ClipBoard />
-        </DevTransform>
+        <GojoPenHolder position={[0.505, 0.752, -0.142]} rotation={[0, -0.5, 0]} />
+        <WacomPen position={[0.581, 0.92, -0.113]} rotation={[Math.PI / 2, 0, Math.PI / 1.5]} />
+        <Boombox
+          position={BOOMBOX_POSITION}
+          rotation={[0, BOOMBOX_ROTATION_Y, 0]}
+          speed={0.42}
+          onClick={(e) => {
+            e.stopPropagation()
+            onFocus(focus === 'boombox' ? null : 'boombox')
+          }}
+          onPointerOver={() => (document.body.style.cursor = 'pointer')}
+          onPointerOut={() => (document.body.style.cursor = 'auto')}
+        />
+        <MusicNotes
+          playing={musicPlaying}
+          getLevel={musicLevel}
+          position={[BOOMBOX_POSITION[0], BOOMBOX_POSITION[1] + 0.13, BOOMBOX_POSITION[2]]}
+        />
+        <ClipBoard
+          position={CLIPBOARD_POSITION}
+          rotation={[0, CLIPBOARD_ROTATION_Y, 0]}
+          pageIndex={pageIndex}
+          interactive={focus === 'clipboard'}
+          onPageChange={onPageChange}
+          onClick={(e) => {
+            e.stopPropagation()
+            onFocus(focus === 'clipboard' ? null : 'clipboard')
+          }}
+          onPointerOver={() => (document.body.style.cursor = 'pointer')}
+          onPointerOut={() => (document.body.style.cursor = 'auto')}
+        />
         <ContactShadows position={[0, 0.001, 0]} opacity={0.45} scale={12} blur={2} far={4} />
         <Environment preset="apartment" environmentIntensity={0.4} />
       </Suspense>

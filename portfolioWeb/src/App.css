@@ -323,3 +323,354 @@
   font-size: 0.65rem;
   opacity: 0.5;
 }
+
+/* Anchor does the centring: the panel itself can't use translateX(-50%) because
+   framer-motion owns its transform while animating the rise-out. */
+.glass-player-anchor {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 34vh;
+  display: flex;
+  justify-content: center;
+  perspective: 1500px;
+  perspective-origin: 50% 65%;
+  pointer-events: none;
+  z-index: 25;
+}
+
+/* Real geometry: the slab keeps the 3D context and framer drives its rotation, while
+   the faces below are separate planes rotated into place. The glass front has to stay
+   a child because backdrop-filter would flatten anything it's applied to. */
+.glass-player-slab {
+  position: relative;
+  pointer-events: auto;
+  width: min(430px, calc(100vw - 28px));
+  transform-style: preserve-3d;
+}
+
+.glass-player__side {
+  position: absolute;
+}
+
+/* Insets keep each face inside the straight part of the rounded front, so the
+   corners don't show gaps when the slab turns. */
+.glass-player__side--right {
+  top: 32px;
+  bottom: 32px;
+  right: 0;
+  width: 22px;
+  transform-origin: 100% 50%;
+  transform: rotateY(-90deg);
+}
+
+.glass-player__side--left {
+  top: 32px;
+  bottom: 32px;
+  left: 0;
+  width: 22px;
+  transform-origin: 0 50%;
+  transform: rotateY(90deg);
+}
+
+.glass-player__side--top {
+  top: 0;
+  left: 32px;
+  right: 32px;
+  height: 22px;
+  transform-origin: 50% 0;
+  transform: rotateX(-90deg);
+}
+
+.glass-player__side--bottom {
+  bottom: 0;
+  left: 32px;
+  right: 32px;
+  height: 22px;
+  transform-origin: 50% 100%;
+  transform: rotateX(90deg);
+}
+
+.glass-player {
+  position: relative;
+  width: 100%;
+  padding: 26px 26px 24px;
+  border-radius: 30px;
+  overflow: hidden;
+  color: #fffdf7;
+  /* Tint + inner rim light stacked over the blur is what sells the "glass" look. */
+  background:
+    linear-gradient(160deg, rgba(0, 121, 143, 0.534), rgba(1, 70, 102, 0.534) 42%, rgba(77, 0, 100, 0.568)),
+    rgba(6, 191, 238, 0.075);
+  box-shadow:
+    0 34px 55px rgba(63, 26, 97, 0.39),
+    inset 0 1px 0 rgba(168, 203, 255, 0.288),
+    inset 0 -1px 0 rgba(172, 83, 245, 0.329);
+}
+
+/* Moving specular streak across the top edge. */
+.glass-player__sheen {
+  position: absolute;
+  inset: -40% -20% auto;
+  height: 140%;
+  pointer-events: none;
+  background: radial-gradient(60% 45% at 30% 0%, rgba(255, 255, 255, 0.795), transparent 70%);
+}
+
+.glass-player__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  color: inherit;
+  background: none;
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+
+
+
+/* --- 3D album case --- */
+.glass-player__art {
+  position: relative;
+  width: 68%;
+  margin: 0 auto 22px;
+  aspect-ratio: 1 / 1;
+  perspective: 780px;
+}
+
+/* Contact shadow on the panel behind the case. */
+.glass-player__art::after {
+  content: '';
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: -14px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(12, 7, 2, 0.5);
+  filter: blur(12px);
+}
+
+/* Split from the box below so the looping sway and the pointer tilt don't fight
+   over the same transform property. The duration is deliberately constant: changing
+   it on play/pause would make the loop jump. */
+.glass-player__art-idle {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  animation: art-idle 9s ease-in-out infinite;
+}
+
+@keyframes art-idle {
+  0%,
+  100% {
+    transform: translateY(0) rotateY(-4deg) rotateX(1.5deg);
+  }
+  50% {
+    transform: translateY(-7px) rotateY(4deg) rotateX(-1.5deg);
+  }
+}
+
+.glass-player__art-box {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  /* Faces are extruded from the front plane backwards, so push the box forward by
+     half its depth to keep it turning around its own centre. */
+  transform: translateZ(9px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.glass-player__art-front,
+.glass-player__art-gloss,
+.glass-player__art-edge {
+  position: absolute;
+  border-radius: 6px;
+}
+
+.glass-player__art-front {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+}
+
+.glass-player__art-gloss {
+  inset: 0;
+  transform: translateZ(0.5px);
+  pointer-events: none;
+  mix-blend-mode: screen;
+  background: linear-gradient(
+    118deg,
+    rgba(255, 255, 255, 0.42) 0%,
+    rgba(255, 255, 255, 0.06) 26%,
+    transparent 46%,
+    rgba(255, 255, 255, 0.14) 78%,
+    transparent 100%
+  );
+}
+
+.glass-player__art-edge {
+  border-radius: 2px;
+  background: linear-gradient(to bottom, #4a4038, #221b16 60%, #100c09);
+}
+
+.glass-player__art-edge--right {
+  top: 0;
+  right: 0;
+  width: 18px;
+  height: 100%;
+  transform-origin: 100% 50%;
+  transform: rotateY(-90deg);
+}
+
+.glass-player__art-edge--left {
+  top: 0;
+  left: 0;
+  width: 18px;
+  height: 100%;
+  transform-origin: 0 50%;
+  transform: rotateY(90deg);
+}
+
+.glass-player__art-edge--top {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 18px;
+  transform-origin: 50% 0;
+  transform: rotateX(-90deg);
+  background: linear-gradient(to right, #4f453c, #2a221c 55%, #17110d);
+}
+
+.glass-player__art-edge--bottom {
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 18px;
+  transform-origin: 50% 100%;
+  transform: rotateX(90deg);
+  background: linear-gradient(to right, #3a312a, #1a1410 55%, #0d0907);
+}
+
+.glass-player__meta {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 16px;
+  padding: 0 34px;
+  text-align: center;
+}
+
+.glass-player__title {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.glass-player__artist {
+  font-size: 0.78rem;
+  opacity: 0.72;
+}
+
+.glass-player__scrub,
+.glass-player__volume {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.glass-player__scrub {
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+}
+
+.glass-player input[type='range'] {
+  flex: 1;
+  height: 4px;
+  appearance: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+}
+
+.glass-player input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fffdf7;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.glass-player input[type='range']::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: none;
+  border-radius: 50%;
+  background: #fffdf7;
+}
+
+.glass-player__controls {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin: 10px 0 12px;
+}
+
+.glass-player__controls button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.glass-player__controls button:hover {
+  background: rgba(255, 255, 255, 0.26);
+  transform: translateY(-2px);
+}
+
+.glass-player__play {
+  width: 52px !important;
+  height: 52px !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #33261a !important;
+  box-shadow: 0 8px 20px rgba(20, 12, 4, 0.3);
+}
+
+.glass-player__play:hover {
+  background: #fff !important;
+}
+
+.glass-player__volume button {
+  display: flex;
+  padding: 4px;
+  border: none;
+  border-radius: 999px;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+}
