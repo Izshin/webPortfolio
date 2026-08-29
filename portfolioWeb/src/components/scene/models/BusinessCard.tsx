@@ -2,6 +2,7 @@ import { useTexture } from '@react-three/drei'
 import { useEffect, useMemo, useState, type JSX } from 'react'
 import * as THREE from 'three'
 import { profile } from '../../../data/profile'
+import type { NoteLang } from '../../../data/notes'
 
 const PHOTO_SRC = '/photos/me.jpg'
 /** The file name has spaces, so it has to travel encoded. */
@@ -17,8 +18,9 @@ export const CARD_T = 0.0007
 /** Where the bass sits on the back face, in canvas pixels. */
 const BASS_ART = { x: (FACE_W - 810) / 2, y: 130, w: 810, h: Math.round(810 * 0.549) }
 const BASS_SFX = '/soundEffects/bass_sound_effect.mp3'
-/** Anything meaningfully darker than the card stock counts as part of the drawing. */
-const INK_THRESHOLD = 225
+/** Square pad over the middle of the drawing: the only spot that plays the note. */
+const BASS_HIT_PX = 260
+const BASS_HIT_V = 1 - (BASS_ART.y + BASS_ART.h / 2) / FACE_H
 
 const INK = {
   navy: '#12233f',
@@ -32,6 +34,24 @@ const INK = {
 const FONT_HEAD = "Montserrat, 'Segoe UI', system-ui, sans-serif"
 const FONT_BODY = "Inter, 'Segoe UI', system-ui, sans-serif"
 const FONT_SPECS = ['800 52px Montserrat', '700 26px Montserrat', '500 25px Inter', '500 27px Inter']
+
+/** The card follows the clipboard's language toggle; only these strings change. */
+const COPY: Record<NoteLang, { flip: string; bass: string; click: string; title: string; location: string }> = {
+  es: {
+    flip: 'PULSA PARA GIRAR',
+    bass: 'Y TOCO EL BAJO',
+    click: '¡PÚLSALO!',
+    title: 'Graduado en Ingeniería del Software',
+    location: 'Sevilla, España',
+  },
+  en: {
+    flip: 'CLICK TO FLIP',
+    bass: 'AND I PLAY BASS',
+    click: 'CLICK IT!',
+    title: profile.title,
+    location: profile.location,
+  },
+}
 
 /** lucide outlines and the brand marks from BrandIcons, as raw path data on a 24 grid. */
 const ICONS = {
@@ -162,15 +182,15 @@ function drawCover(
   ctx.drawImage(image, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh)
 }
 
-const ROWS: { icon: IconName; text: string; url?: string }[] = [
-  { icon: 'pin', text: profile.location },
+const rows = (lang: NoteLang): { icon: IconName; text: string; url?: string }[] => [
+  { icon: 'pin', text: COPY[lang].location },
   { icon: 'mail', text: profile.email, url: `mailto:${profile.email}` },
   { icon: 'github', text: `github.com/${profile.githubHandle}`, url: profile.github },
   { icon: 'linkedin', text: profile.linkedinHandle, url: profile.linkedin },
 ]
 
 /** Photo on the left, everything you can write to on the right. */
-function paintFront(photo: CanvasImageSource | undefined) {
+function paintFront(photo: CanvasImageSource | undefined, lang: NoteLang) {
   const face = newFace()
   if (!face) return null
   const { canvas, ctx } = face
@@ -195,7 +215,7 @@ function paintFront(photo: CanvasImageSource | undefined) {
 
   ctx.font = `600 20px ${FONT_BODY}`
   ctx.fillStyle = INK.grey
-  const hint = 'CLICK TO FLIP'
+  const hint = COPY[lang].flip
   fillTracked(ctx, hint, photoX - trackedWidth(ctx, hint, 4) / 2, 500, 4)
 
   const x = 380
@@ -211,14 +231,14 @@ function paintFront(photo: CanvasImageSource | undefined) {
 
   ctx.font = `500 25px ${FONT_BODY}`
   ctx.fillStyle = INK.grey
-  ctx.fillText(profile.title, x, y + 26)
+  ctx.fillText(COPY[lang].title, x, y + 26)
 
   ctx.fillStyle = INK.blue
   ctx.fillRect(x, y + 60, 120, 4)
 
   ctx.font = `500 27px ${FONT_BODY}`
   let rowY = y + 148
-  for (const row of ROWS) {
+  for (const row of rows(lang)) {
     drawIcon(ctx, row.icon, x, rowY - 25, 30)
     ctx.fillStyle = row.url ? INK.blue : INK.black
     ctx.fillText(row.text, x + 46, rowY)
@@ -234,7 +254,7 @@ function paintFront(photo: CanvasImageSource | undefined) {
 }
 
 /** The b-side: the bass, printed straight onto the card stock. */
-function paintBack(bass: CanvasImageSource | undefined) {
+function paintBack(bass: CanvasImageSource | undefined, lang: NoteLang) {
   const face = newFace()
   if (!face) return null
   const { canvas, ctx } = face
@@ -249,20 +269,15 @@ function paintBack(bass: CanvasImageSource | undefined) {
 
   ctx.font = `700 26px ${FONT_HEAD}`
   ctx.fillStyle = INK.navy
-  const caption = 'AND I PLAY BASS'
-  fillTracked(ctx, caption, (FACE_W - trackedWidth(ctx, caption, 6)) / 2, 596, 6)
+  const caption = COPY[lang].bass
+  fillTracked(ctx, caption, (FACE_W - trackedWidth(ctx, caption, 6)) / 2, 92, 6)
 
-  // The drawing is printed on paper, not cut out, so its pixels are the only hit test there is.
-  const art = ctx.getImageData(BASS_ART.x, BASS_ART.y, BASS_ART.w, BASS_ART.h).data
-  const isInk = (u: number, v: number) => {
-    const col = Math.floor(u * BASS_ART.w)
-    const row = Math.floor((1 - v) * BASS_ART.h)
-    if (col < 0 || row < 0 || col >= BASS_ART.w || row >= BASS_ART.h) return false
-    const i = (row * BASS_ART.w + col) * 4
-    return (art[i] + art[i + 1] + art[i + 2]) / 3 < INK_THRESHOLD
-  }
+  ctx.font = `700 26px ${FONT_HEAD}`
+  ctx.fillStyle = INK.blue
+  const hint = COPY[lang].click
+  fillTracked(ctx, hint, (FACE_W - trackedWidth(ctx, hint, 6)) / 2, 596, 6)
 
-  return { texture: toTexture(canvas), isInk }
+  return { texture: toTexture(canvas) }
 }
 
 /** Repaints once the web fonts are in, so the first paint is not the fallback face. */
@@ -283,21 +298,21 @@ function useFontsReady() {
 
 export type CardFaces = {
   front: { texture: THREE.CanvasTexture; links: LinkRect[] } | null
-  back: { texture: THREE.CanvasTexture; isInk: (u: number, v: number) => boolean } | null
+  back: { texture: THREE.CanvasTexture } | null
 }
 
 /** Paints both faces once; the holder shares the same pair across the whole stack. */
-export function useCardFaces(): CardFaces {
+export function useCardFaces(lang: NoteLang): CardFaces {
   const images = useTexture({ photo: PHOTO_SRC, bass: BASS_SRC })
   const fontsReady = useFontsReady()
 
   const faces = useMemo(() => {
     return {
-      front: paintFront(images.photo.image as CanvasImageSource | undefined),
-      back: paintBack(images.bass.image as CanvasImageSource | undefined),
+      front: paintFront(images.photo.image as CanvasImageSource | undefined, lang),
+      back: paintBack(images.bass.image as CanvasImageSource | undefined, lang),
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [images.photo, images.bass, fontsReady])
+  }, [images.photo, images.bass, fontsReady, lang])
 
   useEffect(
     () => () => {
@@ -336,31 +351,41 @@ export function CardLinks({ links }: { links: LinkRect[] }) {
 }
 
 /**
- * The printed bass answers when you touch it. Its face is the box's -y, where the texture runs
- * the other way round: the canvas top row lands at +z instead of -z. Only the drawn pixels play
- * a note; bare paper turns the card over like the rest of the back does.
+ * The back face's hit zones: a square pad over the body of the printed bass plays the note,
+ * and the rest of the paper turns the card back over. Both sit above the card mesh, so a
+ * click on the back never falls through to it.
  */
-export function CardBassZone({ back, onMiss }: { back: CardFaces['back']; onMiss?: () => void }) {
-  const v = (BASS_ART.y + BASS_ART.h / 2) / FACE_H
+export function CardBassZone({ onMiss }: { onMiss?: () => void }) {
+  const side = (BASS_HIT_PX / FACE_W) * CARD_W
 
   return (
-    <mesh
-      position={[0, -CARD_T / 2 - 0.0003, (0.5 - v) * CARD_D]}
-      rotation={[Math.PI / 2, 0, 0]}
-      onClick={(e) => {
-        e.stopPropagation()
-        if (!e.uv || !back?.isInk(e.uv.x, e.uv.y)) {
+    <group position={[0, -CARD_T / 2 - 0.0003, 0]} rotation={[Math.PI / 2, 0, 0]}>
+      <mesh
+        onClick={(e) => {
+          e.stopPropagation()
           onMiss?.()
-          return
-        }
-        const note = new Audio(BASS_SFX)
-        note.volume = 0.7
-        void note.play().catch(() => {})
-      }}
-    >
-      <planeGeometry args={[(BASS_ART.w / FACE_W) * CARD_W, (BASS_ART.h / FACE_H) * CARD_D]} />
-      <meshBasicMaterial transparent opacity={0} depthWrite={false} />
-    </mesh>
+        }}
+      >
+        <planeGeometry args={[CARD_W, CARD_D]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+      </mesh>
+      <mesh
+        position={[0, (BASS_HIT_V - 0.5) * CARD_D, 0.0002]}
+        onClick={(e) => {
+          e.stopPropagation()
+          const note = new Audio(BASS_SFX)
+          note.volume = 0.7
+          void note.play().catch(() => {})
+        }}
+        onPointerOver={(e) => {
+          e.stopPropagation()
+          document.body.style.cursor = 'pointer'
+        }}
+      >
+        <planeGeometry args={[side, side]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+      </mesh>
+    </group>
   )
 }
 

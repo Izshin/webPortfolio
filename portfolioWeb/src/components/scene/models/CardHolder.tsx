@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, type JSX } from 'react'
 import * as THREE from 'three'
 import { enableShadows, fitToHeight } from './modelUtils'
 import { CARD_D, CardBassZone, CardLinks, CardMesh, useCardFaces, type CardFaces } from './BusinessCard'
+import type { NoteLang } from '../../../data/notes'
 
 const MODEL = '/models/card-holder/source/card-holder.glb'
 /** The .blend keeps four stacked variants of the tray; only this one is the finished piece. */
@@ -47,15 +48,17 @@ const CARD_Y = CARD_FLOOR + CARD_D / 2
 export function CardHolder({
   height = 0.045,
   interactive = false,
+  lang = 'es',
   onActivate,
   ...props
 }: {
   height?: number
   interactive?: boolean
+  lang?: NoteLang
   onActivate?: () => void
 } & JSX.IntrinsicElements['group']) {
   const gltf = useGLTF(MODEL)
-  const faces = useCardFaces()
+  const faces = useCardFaces(lang)
 
   const holder = useMemo(() => gltf.scene.getObjectByName(HOLDER_NODE)?.clone(true) ?? null, [gltf])
 
@@ -183,9 +186,7 @@ function TakenCard({
         onPointerOut={() => (document.body.style.cursor = 'auto')}
       />
       {interactive && !flipped && faces.front && <CardLinks links={faces.front.links} />}
-      {interactive && flipped && (
-        <CardBassZone back={faces.back} onMiss={() => setFlipped(false)} />
-      )}
+      {interactive && flipped && <CardBassZone onMiss={() => setFlipped(false)} />}
     </group>
   )
 }

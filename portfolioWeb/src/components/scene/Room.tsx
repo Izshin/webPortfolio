@@ -17,6 +17,7 @@ import { CameraRig } from './CameraRig'
 import { Wall } from './Wall'
 import { Floor } from './Floor'
 import type { SectionId } from '../../data/menu'
+import type { NoteLang } from '../../data/notes'
 
 const BOOMBOX_POSITION: [number, number, number] = [-0.059, 0.74, -0.249]
 const BOOMBOX_ROTATION_Y = -1.7
@@ -101,6 +102,8 @@ export function Room({
   musicLevels,
   pageIndex,
   onPageChange,
+  lang,
+  onLangChange,
 }: {
   onSelectSection: (id: SectionId) => void
   focus: FocusTarget | null
@@ -110,6 +113,8 @@ export function Room({
   musicLevels: () => { bass: number; treble: number }
   pageIndex: number
   onPageChange: (index: number) => void
+  lang: NoteLang
+  onLangChange: (lang: NoteLang) => void
 }) {
   return (
     <Canvas
@@ -193,6 +198,8 @@ export function Room({
           rotation={[0, CLIPBOARD_ROTATION_Y, 0]}
           pageIndex={pageIndex}
           interactive={focus === 'clipboard'}
+          lang={lang}
+          onLangChange={onLangChange}
           onPageChange={onPageChange}
           onClick={(e) => {
             e.stopPropagation()
@@ -207,6 +214,7 @@ export function Room({
           position={CARD_POSITION}
           rotation={[0, CARD_ROTATION_Y, 0]}
           interactive={focus === 'card'}
+          lang={lang}
           onActivate={() => onFocus('card')}
         />
         <ContactShadows position={[0, 0.001, 0]} opacity={0.45} scale={12} blur={2} far={4} />

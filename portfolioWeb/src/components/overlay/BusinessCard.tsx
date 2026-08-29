@@ -18,7 +18,7 @@ export function BusinessCard() {
         aria-label="Flip business card"
       >
         <div className="business-card__face business-card__front">
-          <p className="business-card__eyebrow">Software Engineering Graduate</p>
+          <p className="business-card__eyebrow">Software Engineering</p>
           <h3 className="business-card__name">{profile.name}</h3>
           <ul className="business-card__contacts">
             <li>

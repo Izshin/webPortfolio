@@ -9,6 +9,7 @@ import { notePagesByLang, type NoteBlock, type NoteLang, type NotePage } from '.
 const BASE = '/models/clip-board'
 const clipboardDividend=100
 const POP_SOUND = '/soundEffects/Pop.mp3'
+const PAGE_TURN_SOUND = '/soundEffects/PageTurn.mp3'
 
 /** The page mesh is 23.76 x 33.1 local units and its UVs span the full 0..1 range. */
 const PAGE_W = 744
@@ -589,12 +590,16 @@ export function ClipBoard({
   height = 1 / clipboardDividend,
   pageIndex = 0,
   interactive = false,
+  lang = 'es',
+  onLangChange,
   onPageChange,
   ...props
 }: {
   height?: number
   pageIndex?: number
   interactive?: boolean
+  lang?: NoteLang
+  onLangChange?: (lang: NoteLang) => void
   onPageChange?: (index: number) => void
 } & JSX.IntrinsicElements['group']) {
   const fbx = useLoader(FBXLoader, `${BASE}/source/ClipBoard.fbx`)
@@ -605,19 +610,23 @@ export function ClipBoard({
 
   const model = useMemo(() => fbx.clone(true), [fbx])
   const [frame, setFrame] = useState<PageFrame | null>(null)
-  const [lang, setLang] = useState<NoteLang>('es')
   const popRef = useRef<HTMLAudioElement | null>(null)
+  const pageTurnRef = useRef<HTMLAudioElement | null>(null)
   const fontsReady = useFontsReady()
 
   const handleLang = (next: NoteLang) => {
-    setLang((current) => {
-      if (next !== current) {
-        if (!popRef.current) popRef.current = new Audio(POP_SOUND)
-        popRef.current.currentTime = 0
-        popRef.current.play().catch(() => {})
-      }
-      return next
-    })
+    if (next === lang) return
+    if (!popRef.current) popRef.current = new Audio(POP_SOUND)
+    popRef.current.currentTime = 0
+    popRef.current.play().catch(() => {})
+    onLangChange?.(next)
+  }
+
+  const handlePageChange = (index: number) => {
+    if (!pageTurnRef.current) pageTurnRef.current = new Audio(PAGE_TURN_SOUND)
+    pageTurnRef.current.currentTime = 0
+    pageTurnRef.current.play().catch(() => {})
+    onPageChange?.(index)
   }
 
   const paper = useMemo(() => {
@@ -709,7 +718,7 @@ export function ClipBoard({
               frame={frame}
               u={ARROW_NEXT_U}
               stack={sheets.length}
-              onSelect={() => onPageChange(pageIndex + 1)}
+              onSelect={() => handlePageChange(pageIndex + 1)}
             />
           )}
           {onPageChange && pageIndex > 0 && (
@@ -717,7 +726,7 @@ export function ClipBoard({
               frame={frame}
               u={ARROW_PREV_U}
               stack={sheets.length}
-              onSelect={() => onPageChange(pageIndex - 1)}
+              onSelect={() => handlePageChange(pageIndex - 1)}
             />
           )}
         </>
