@@ -14,12 +14,6 @@ function App() {
       <Suspense fallback={<div className="loading-screen">Setting up the desk…</div>}>
         <Room onSelectSection={setSection} />
       </Suspense>
-
-      <header className="app__badge">
-        <p className="app__badge-name">{profile.name}</p>
-        <p className="app__badge-title">{profile.title}</p>
-      </header>
-
       <Dock />
       <DetailOverlay section={section} onClose={() => setSection(null)} />
     </div>

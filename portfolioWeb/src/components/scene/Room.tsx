@@ -7,6 +7,8 @@ import { Chair } from './models/Chair'
 import { Bonsai } from './models/Bonsai'
 import { PottedPlant } from './models/PottedPlant'
 import { GojoPenHolder } from './models/GojoPenHolder'
+import { WacomPen } from './models/WacomPen'
+import { Boombox } from './models/Boombox'
 import { ClipBoard } from './models/ClipBoard'
 import { GreekEnvironment } from './models/GreekEnvironment'
 import { Skybox } from './models/Skybox'
@@ -58,8 +60,7 @@ export function Room({ onSelectSection }: { onSelectSection: (id: SectionId) => 
         shadow-camera-bottom={-3}
         shadow-bias={-0.0005}
       />
-      <pointLight position={[-3, 2.4, -1.5]} intensity={0.5} color="#ffd9a0" />
-      <pointLight position={[2.5, 1.5, 2]} intensity={0.25} color="#bfe0ff" />
+    
 
       {/* Floor */}
       <Suspense fallback={null}>
@@ -84,10 +85,12 @@ export function Room({ onSelectSection }: { onSelectSection: (id: SectionId) => 
       <Suspense fallback={null}>
         <Desk/>
         <Chair position={[-0.3, 0, 0.5]} rotation={[0, Math.PI * 0.92, 0]} />
-        <Bonsai position={[-0.62, 0.74, -0.42]} rotation={[0, 0.4, 0]} />
+        <Bonsai position={[-0.58, 0.74, -0.22]} rotation={[0, 0.7, 0]} />
         <PottedPlant position={[-2.6, 0, -2.4]} rotation={[0, 0.6, 0]} />
-        <PottedPlant position={[2.7, 0, -2.2]} height={1.05} rotation={[0, -0.5, 0]} />
+        <PottedPlant position={[1.2, 0, -2.2]} height={1.05} rotation={[0, -0.5, 0]} />
         <GojoPenHolder position={[0.58, 0.752, -0.36]}  rotation={[0, -0.5, 0]} />
+        <WacomPen position={[0.65,0.92, -0.33]} rotation={[Math.PI / 2, 0, Math.PI / 1.5]} />
+        <Boombox position={[-0.42, 0.74, 0.1]} rotation={[0, -0.65, 0]} />
         <ClipBoard position={[0.08, 0.75, 0.1]} rotation={[0, 0.3, 0]} />
         <ContactShadows position={[0, 0.001, 0]} opacity={0.45} scale={12} blur={2} far={4} />
         <Environment preset="apartment" environmentIntensity={0.4} />
