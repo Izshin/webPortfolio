@@ -192,7 +192,7 @@
   }
 
   .glass-player-slab {
-    width: min(300px, calc(100vw - 24px));
+    width: min(340px, calc(100vw - 24px));
   }
 
   .glass-player {
@@ -246,7 +246,7 @@
   }
 
   .glass-player-slab {
-    width: min(260px, calc(100vw - 24px));
+    width: min(290px, calc(100vw - 24px));
   }
 
   .glass-player {
@@ -288,7 +288,7 @@
   }
 
   .glass-player-slab {
-    width: min(220px, calc(100vw - 20px));
+    width: min(250px, calc(100vw - 20px));
   }
 
   .glass-player {
