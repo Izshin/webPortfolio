@@ -20,6 +20,8 @@ import { RetryOnError } from './RetryOnError'
 import type { NoteLang } from '../../data/notes'
 import { asset } from '../../asset'
 
+const BOING_SOUND = asset('/soundEffects/Boing.mp3')
+
 // Self-hosted instead of drei's `preset="apartment"` (which fetches from raw.githack.com) so
 // the env map load doesn't depend on an external CDN being reachable in the critical path.
 const APARTMENT_HDRI = asset('/hdri/apartment_1k.hdr')
@@ -139,6 +141,7 @@ export function Room({
 }) {
   // Bumped on every Gojo click; WacomPen watches it and plays a one-shot wiggle each time it changes.
   const [penWiggle, setPenWiggle] = useState(0)
+  const boingRef = useRef<HTMLAudioElement | null>(null)
 
   return (
     <Canvas
@@ -213,6 +216,9 @@ export function Room({
           onClick={(e) => {
             e.stopPropagation()
             setPenWiggle((n) => n + 1)
+            if (!boingRef.current) boingRef.current = new Audio(BOING_SOUND)
+            boingRef.current.currentTime = 0
+            boingRef.current.play().catch(() => {})
           }}
         />
         <WacomPen
