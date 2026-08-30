@@ -11,7 +11,7 @@ const BASE = asset('/models/skybox-skydays-3')
 /** Sketchfab "Sky Days" skybox mesh (inside-out dome) — scaled up to enclose the whole scene so sky/clouds show through the window. */
 export function Skybox({ radius = 20, ...props }: { radius?: number } & JSX.IntrinsicElements['group']) {
   const fbx = useLoader(FBXLoader, `${BASE}/source/extracted/SM_Skybox.FBX`)
-  const map = useTexture(`${BASE}/textures/skybox_skydays_3.png`)
+  const map = useTexture(`${BASE}/textures/skybox_skydays_3.webp`)
 
   const model = useMemo(() => fbx.clone(true), [fbx])
 

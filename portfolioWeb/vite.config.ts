@@ -10,4 +10,18 @@ export default defineConfig({
     react(),
     babel({ presets: [reactCompilerPreset()] })
   ],
+  build: {
+    target: 'es2022',
+    rollupOptions: {
+      output: {
+        // three/r3f/drei churn far less often than app code, so splitting them into their
+        // own chunk lets repeat visitors reuse the cached chunk across deploys.
+        manualChunks(id) {
+          if (id.includes('node_modules/three')) return 'three'
+          if (id.includes('node_modules/@react-three')) return 'r3f'
+          if (id.includes('node_modules/framer-motion')) return 'motion'
+        },
+      },
+    },
+  },
 })

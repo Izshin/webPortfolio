@@ -67,7 +67,7 @@ export function GreekEnvironment({ height = 8.5, ...props }: { height?: number }
         }
       }
     })
-    fitToHeight(model, height, 'GreekEnvironment')
+    fitToHeight(model, height)
   }, [model, height, materials])
 
   return (

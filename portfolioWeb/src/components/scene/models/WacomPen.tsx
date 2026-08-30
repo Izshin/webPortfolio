@@ -12,11 +12,11 @@ const BASE = asset('/models/wacom-pen')
 export function WacomPen({ height = 0.17, ...props }: { height?: number } & JSX.IntrinsicElements['group']) {
   const fbx = useLoader(FBXLoader, `${BASE}/source/extracted/Wacom_LP_Tri.fbx`)
   const textures = useTexture({
-    map: `${BASE}/textures/Wacom_LP_Tri_lambert1_BaseColor.png`,
-    normalMap: `${BASE}/textures/Wacom_LP_Tri_lambert1_Normal.png`,
-    roughnessMap: `${BASE}/textures/Wacom_LP_Tri_lambert1_Roughness.png`,
-    metalnessMap: `${BASE}/textures/Wacom_LP_Tri_lambert1_Metallic.png`,
-    aoMap: `${BASE}/textures/Wacom_LP_Tri_lambert1_AO.png`,
+    map: `${BASE}/textures/Wacom_LP_Tri_lambert1_BaseColor.webp`,
+    normalMap: `${BASE}/textures/Wacom_LP_Tri_lambert1_Normal.webp`,
+    roughnessMap: `${BASE}/textures/Wacom_LP_Tri_lambert1_Roughness.webp`,
+    metalnessMap: `${BASE}/textures/Wacom_LP_Tri_lambert1_Metallic.webp`,
+    aoMap: `${BASE}/textures/Wacom_LP_Tri_lambert1_AO.webp`,
   })
 
   const model = useMemo(() => fbx.clone(true), [fbx])

@@ -1,3 +1,23 @@
+/* Self-hosted (public/fonts/): only used by the canvas-drawn clipboard/business-card text
+   (ctx.font resolves against document.fonts, no DOM element sets these families), so this
+   is the only place they need to be declared. Both files are variable fonts covering the
+   full weight range in one download - see OPTIMIZATION_PLAN.md phase 4. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/Inter-latin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/Montserrat-latin.woff2') format('woff2');
+}
+
 :root {
   --text: #4a3f35;
   --text-h: #2a2118;

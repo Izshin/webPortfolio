@@ -26,11 +26,11 @@ const BASS_HIT_V = 1 - (BASS_ART.y + BASS_ART.h / 2) / FACE_H
 const INK = {
   navy: '#12233f',
   blue: '#1f47a3',
-  grey: '#7c8492',
+  grey: '#005eff',
   black: '#1b1f27',
   paper: '#fbf8f1',
   edge: '#efe9dc',
-  hairline: 'rgba(18, 35, 63, 0.18)',
+  hairline: 'rgba(72, 84, 99, 0.52)',
 }
 const FONT_HEAD = "Montserrat, 'Segoe UI', system-ui, sans-serif"
 const FONT_BODY = "Inter, 'Segoe UI', system-ui, sans-serif"

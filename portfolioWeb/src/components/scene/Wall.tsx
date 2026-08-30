@@ -4,7 +4,7 @@ import { useTexture } from '@react-three/drei'
 import { Window } from './Window'
 import { asset } from '../../asset'
 
-const WALL_TEXTURE = asset('/models/marbeWalltexture.png')
+const WALL_TEXTURE = asset('/models/marbeWalltexture.webp')
 
 interface WallProps {
   position?: [number, number, number]

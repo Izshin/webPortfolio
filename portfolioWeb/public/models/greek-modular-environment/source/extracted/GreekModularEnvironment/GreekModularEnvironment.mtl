@@ -3,7 +3,7 @@ illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd TrunkDiff.png
+map_Kd TrunkDiff.webp
 Ni 1.00
 Ks 0.00 0.00 0.00
 newmtl blinn2SG
@@ -11,19 +11,19 @@ illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd DirtDiff.png
+map_Kd DirtDiff.webp
 Ni 1.00
 Ks 0.00 0.00 0.00
-map_Ks DirtSpec.png
+map_Ks DirtSpec.webp
 newmtl blinn3SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd ConcreteDiff.png
+map_Kd ConcreteDiff.webp
 Ni 1.00
 Ks 0.00 0.00 0.00
-map_Ks ConcreteSpec.png
+map_Ks ConcreteSpec.webp
 newmtl blinn3SG1
 illum 4
 Kd 0.00 0.00 0.00
@@ -36,7 +36,7 @@ illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd PotteryDiff.png
+map_Kd PotteryDiff.webp
 Ni 1.00
 Ks 0.50 0.50 0.50
 newmtl blinn6SG
@@ -44,28 +44,28 @@ illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd GrassDiff.png
+map_Kd GrassDiff.webp
 Ni 1.00
 Ks 0.00 0.00 0.00
-map_Ks GrassSpec.png
+map_Ks GrassSpec.webp
 newmtl blinn7SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd BluePlasterDiff.png
+map_Kd BluePlasterDiff.webp
 Ni 1.00
 Ks 0.00 0.00 0.00
-map_Ks BluePlasterSpec.png
+map_Ks BluePlasterSpec.webp
 newmtl blinn9SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Wood-MetalDiff.png
+map_Kd Wood-MetalDiff.webp
 Ni 1.00
 Ks 0.00 0.00 0.00
-map_Ks Wood-MetalSpec.png
+map_Ks Wood-MetalSpec.webp
 newmtl initialShadingGroup
 illum 4
 Kd 1.00 0.92 0.49
@@ -84,7 +84,7 @@ illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd TrunkDiff.png
+map_Kd TrunkDiff.webp
 Ni 1.00
 Ks 0.00 0.00 0.00
 newmtl pasted__blinn2SG
@@ -94,31 +94,31 @@ Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
 Ni 1.00
 Ks 0.00 0.00 0.00
-map_Ks PalmLeafSpec.png
+map_Ks PalmLeafSpec.webp
 newmtl pasted__blinn2SG1
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd DirtDiff.png
+map_Kd DirtDiff.webp
 Ni 1.00
 Ks 0.00 0.00 0.00
-map_Ks DirtSpec.png
+map_Ks DirtSpec.webp
 newmtl pasted__blinn3SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd ConcreteDiff.png
+map_Kd ConcreteDiff.webp
 Ni 1.00
 Ks 0.00 0.00 0.00
-map_Ks ConcreteSpec.png
+map_Ks ConcreteSpec.webp
 newmtl pasted__blinn3SG1
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd CordylineDiff.png
+map_Kd CordylineDiff.webp
 Ni 1.00
 Ks 0.00 0.00 0.00
 newmtl pasted__blinn3SG2
@@ -126,16 +126,16 @@ illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd ConcreteDiff.png
+map_Kd ConcreteDiff.webp
 Ni 1.00
 Ks 0.00 0.00 0.00
-map_Ks ConcreteSpec.png
+map_Ks ConcreteSpec.webp
 newmtl pasted__blinn4SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd PotteryDiff.png
+map_Kd PotteryDiff.webp
 Ni 1.00
 Ks 0.50 0.50 0.50
 newmtl pasted__blinn6SG
@@ -143,43 +143,43 @@ illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd GrassDiff.png
+map_Kd GrassDiff.webp
 Ni 1.00
 Ks 0.00 0.00 0.00
-map_Ks GrassSpec.png
+map_Ks GrassSpec.webp
 newmtl pasted__blinn6SG1
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd GrassDiff.png
+map_Kd GrassDiff.webp
 Ni 1.00
 Ks 0.00 0.00 0.00
-map_Ks GrassSpec.png
+map_Ks GrassSpec.webp
 newmtl pasted__blinn7SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd BluePlasterDiff.png
+map_Kd BluePlasterDiff.webp
 Ni 1.00
 Ks 0.00 0.00 0.00
-map_Ks BluePlasterSpec.png
+map_Ks BluePlasterSpec.webp
 newmtl pasted__blinn9SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd Wood-MetalDiff.png
+map_Kd Wood-MetalDiff.webp
 Ni 1.00
 Ks 0.00 0.00 0.00
-map_Ks Wood-MetalSpec.png
+map_Ks Wood-MetalSpec.webp
 newmtl pasted__pasted__blinn1SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd HedgeDiff.png
+map_Kd HedgeDiff.webp
 Ni 1.00
 Ks 0.00 0.00 0.00
 newmtl pasted__pasted__blinn2SG
@@ -187,7 +187,7 @@ illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd PalmLeafDiff.png
+map_Kd PalmLeafDiff.webp
 Ni 1.00
 Ks 0.00 0.00 0.00
-map_Ks PalmLeafSpec.png
+map_Ks PalmLeafSpec.webp

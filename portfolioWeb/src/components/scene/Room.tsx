@@ -17,6 +17,11 @@ import { CameraRig } from './CameraRig'
 import { Wall } from './Wall'
 import { Floor } from './Floor'
 import type { NoteLang } from '../../data/notes'
+import { asset } from '../../asset'
+
+// Self-hosted instead of drei's `preset="apartment"` (which fetches from raw.githack.com) so
+// the env map load doesn't depend on an external CDN being reachable in the critical path.
+const APARTMENT_HDRI = asset('/hdri/apartment_1k.hdr')
 
 const BOOMBOX_POSITION: [number, number, number] = [-0.059, 0.74, -0.249]
 const BOOMBOX_ROTATION_Y = -1.7
@@ -116,8 +121,8 @@ export function Room({
   return (
     <Canvas
       shadows
-      dpr={[1, 2]}
-      gl={{ antialias: true }}
+      dpr={[1, 1.5]}
+      gl={{ antialias: true, powerPreference: 'high-performance' }}
       performance={{ min: 0.85 }}
       onPointerMissed={onBackgroundClick}
     >
@@ -137,7 +142,7 @@ export function Room({
         castShadow
         position={[3, 5.5, 2.5]}
         intensity={1.7}
-        shadow-mapSize={[2048, 2048]}
+        shadow-mapSize={[1024, 1024]}
         shadow-camera-left={-3}
         shadow-camera-right={3}
         shadow-camera-top={3}
@@ -214,8 +219,8 @@ export function Room({
           lang={lang}
           onActivate={() => onFocus('card')}
         />
-        <ContactShadows position={[0, 0.001, 0]} opacity={0.45} scale={12} blur={2} far={4} />
-        <Environment preset="apartment" environmentIntensity={0.4} />
+        <ContactShadows position={[0, 0.001, 0]} opacity={0.45} scale={12} blur={2} far={4} frames={1} />
+        <Environment files={APARTMENT_HDRI} environmentIntensity={0.4} />
       </Suspense>
     </Canvas>
   )

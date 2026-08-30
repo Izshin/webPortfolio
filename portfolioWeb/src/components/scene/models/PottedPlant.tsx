@@ -11,11 +11,11 @@ const BASE = asset('/models/indoor-plant-with-pot-a')
 export function PottedPlant({ height = 0.9, ...props }: { height?: number } & JSX.IntrinsicElements['group']) {
   const fbx = useLoader(FBXLoader, `${BASE}/source/Plant A.fbx`)
   const textures = useTexture({
-    plantMap: `${BASE}/textures/Plant_A.png`,
-    potMap: `${BASE}/textures/Pot_A_albedo.png`,
-    potNormal: `${BASE}/textures/Pot_A_normal.png`,
-    potRoughness: `${BASE}/textures/Pot_A_roughness.png`,
-    soilMap: `${BASE}/textures/soil.png`,
+    plantMap: `${BASE}/textures/Plant_A.webp`,
+    potMap: `${BASE}/textures/Pot_A_albedo.webp`,
+    potNormal: `${BASE}/textures/Pot_A_normal.webp`,
+    potRoughness: `${BASE}/textures/Pot_A_roughness.webp`,
+    soilMap: `${BASE}/textures/soil.webp`,
   })
 
   const model = useMemo(() => fbx.clone(true), [fbx])
@@ -54,7 +54,7 @@ export function PottedPlant({ height = 0.9, ...props }: { height?: number } & JS
       }
     })
     enableShadows(model)
-    fitToHeight(model, height, 'PottedPlant')
+    fitToHeight(model, height)
   }, [model, textures, height])
 
   return (

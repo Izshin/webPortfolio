@@ -11,10 +11,10 @@ const BASE = asset('/models/office-chair/source/extracted/model')
 export function Chair({ height = 1.1, ...props }: { height?: number } & JSX.IntrinsicElements['group']) {
   const collada = useLoader(ColladaLoader, `${BASE}/model.dae`)
   const [map, metalnessMap, normalMap, roughnessMap] = useTexture([
-    `${BASE}/textures/01 - Default_albedo.jpg`,
-    `${BASE}/textures/01 - Default_metallic.jpg`,
-    `${BASE}/textures/01 - Default_normal.png`,
-    `${BASE}/textures/01 - Default_roughness.jpg`,
+    `${BASE}/textures/01 - Default_albedo.webp`,
+    `${BASE}/textures/01 - Default_metallic.webp`,
+    `${BASE}/textures/01 - Default_normal.webp`,
+    `${BASE}/textures/01 - Default_roughness.webp`,
   ])
 
   const model = useMemo(() => collada?.scene.clone(true) ?? null, [collada])
@@ -36,7 +36,7 @@ export function Chair({ height = 1.1, ...props }: { height?: number } & JSX.Intr
       }
     })
     enableShadows(model)
-    fitToHeight(model, height, 'Chair')
+    fitToHeight(model, height)
   }, [model, map, metalnessMap, normalMap, roughnessMap, height])
 
   return (

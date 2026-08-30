@@ -1,35 +1,27 @@
 import { useEffect, useMemo, type JSX } from 'react'
-import { useLoader } from '@react-three/fiber'
-import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js'
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
+import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import { enableShadows, fitToHeight } from './modelUtils'
 import { asset } from '../../../asset'
 
-const BASE = asset('/models/gojoPenHolder')
+// Decimated from the original 237k-face OBJ (28.75 MB) down to ~30k faces via Blender headless
+// (tools/decimate-gojo.py) and re-exported as GLB (~1.4 MB) — see OPTIMIZATION_PLAN.md phase 3.1.
+const MODEL = asset('/models/gojoPenHolder/gojo.glb')
 
-// See GreekEnvironment: one OBJLoader instance is shared per constructor, so each OBJ model
-// needs its own subclass or their setMaterials calls clobber each other.
-class GojoOBJLoader extends OBJLoader {}
-
-/** Gojo figure (flat-color OBJ/MTL, no texture maps) — replaces the plain PenHolder on the desk. */
+/** Gojo figure (flat-color, no texture maps) — replaces the plain PenHolder on the desk. */
 export function GojoPenHolder({ height = 0.18, ...props }: { height?: number } & JSX.IntrinsicElements['group']) {
-  const materials = useLoader(MTLLoader, `${BASE}/Gojo.mtl`)
-  const obj = useLoader(GojoOBJLoader, `${BASE}/Gojo.obj`, (loader) => {
-    materials.preload()
-    loader.setMaterials(materials)
-  })
+  const gltf = useGLTF(MODEL)
 
-  const model = useMemo(() => obj.clone(true), [obj])
+  const model = useMemo(() => gltf.scene.clone(true), [gltf])
 
   useEffect(() => {
     model.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
-        const mats = (child as THREE.Mesh).material as THREE.MeshPhongMaterial | THREE.MeshPhongMaterial[]
+        const mats = (child as THREE.Mesh).material as THREE.MeshStandardMaterial | THREE.MeshStandardMaterial[]
         for (const mat of Array.isArray(mats) ? mats : [mats]) {
-          // .mtl's Ns 250 + Ks 0.5 gives a glossy plastic look; tone down the specular highlight.
-          mat.shininess = 8
-          mat.specular.setScalar(0.05)
+          // Toned-down matte plastic look, same intent as the old Phong shininess/specular tweak.
+          mat.roughness = 0.6
+          mat.metalness = 0
         }
       }
     })

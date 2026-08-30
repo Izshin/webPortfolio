@@ -25,11 +25,11 @@ export function Boombox({
   const group = useRef<THREE.Group>(null)
   const fbx = useLoader(FBXLoader, `${BASE}/source/Boombox_FullAnimation.fbx`)
   const textures = useTexture({
-    map: `${BASE}/textures/Boombox_Animate_Material.png`,
-    normalMap: `${BASE}/textures/ManuelLagonera_PropModel_Normal.png`,
-    roughnessMap: `${BASE}/textures/ManuelLagonera_PropModel_Roughness.png`,
-    metalnessMap: `${BASE}/textures/ManuelLagonera_PropModel_Metallic.png`,
-    emissiveMap: `${BASE}/textures/ManuelLagonera_PropModel_Emissive.png`,
+    map: `${BASE}/textures/Boombox_Animate_Material.webp`,
+    normalMap: `${BASE}/textures/ManuelLagonera_PropModel_Normal.webp`,
+    roughnessMap: `${BASE}/textures/ManuelLagonera_PropModel_Roughness.webp`,
+    metalnessMap: `${BASE}/textures/ManuelLagonera_PropModel_Metallic.webp`,
+    emissiveMap: `${BASE}/textures/ManuelLagonera_PropModel_Emissive.webp`,
   })
 
   // SkeletonUtils.clone (not Object3D.clone) — a plain clone leaves the copy's

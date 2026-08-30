@@ -1,7 +1,7 @@
 import { useFrame, useLoader } from '@react-three/fiber'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 import { useTexture } from '@react-three/drei'
-import { useEffect, useMemo, useRef, useState, type JSX } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from 'react'
 import * as THREE from 'three'
 import { enableShadows, asColor, fitToHeight, originalMaterialName } from './modelUtils'
 import { notePagesByLang, type NoteBlock, type NoteLang, type NotePage } from '../../../data/notes'
@@ -333,7 +333,7 @@ function drawLanguageToggle(ctx: CanvasRenderingContext2D, lang: NoteLang, links
 
   const texture = new THREE.CanvasTexture(canvas)
   texture.colorSpace = THREE.SRGBColorSpace
-  texture.anisotropy = 8
+  texture.anisotropy = 4
   texture.needsUpdate = true
   return { texture, links }
 }
@@ -520,7 +520,8 @@ function PageSheet({
   }, [map])
 
   const geometry = useMemo(() => {
-    const g = new THREE.PlaneGeometry(frame.width, frame.depth, 1, 56)
+    // 24 segments is plenty for a paper roll deformation; fewer vertices to deform/renormal each frame.
+    const g = new THREE.PlaneGeometry(frame.width, frame.depth, 1, 24)
     g.userData.rest = Float32Array.from(g.attributes.position.array as Float32Array)
     return g
   }, [frame.width, frame.depth])
@@ -605,8 +606,8 @@ export function ClipBoard({
 } & JSX.IntrinsicElements['group']) {
   const fbx = useLoader(FBXLoader, `${BASE}/source/ClipBoard.fbx`)
   const textures = useTexture({
-    boardMap: `${BASE}/textures/clipboard2_board_Diffuse.png`,
-    pageMap: `${BASE}/textures/clipboard2_page_Diffuse.png`,
+    boardMap: `${BASE}/textures/clipboard2_board_Diffuse.webp`,
+    pageMap: `${BASE}/textures/clipboard2_page_Diffuse.webp`,
   })
 
   const model = useMemo(() => fbx.clone(true), [fbx])
@@ -636,26 +637,80 @@ export function ClipBoard({
     if (!canvas) return { canvas: null, texture: textures.pageMap }
     const texture = new THREE.CanvasTexture(canvas)
     texture.colorSpace = THREE.SRGBColorSpace
-    texture.anisotropy = 8
+    texture.anisotropy = 4
     return { canvas, texture }
   }, [textures.pageMap])
 
-  // Both languages are painted up front, so switching only swaps an already built texture.
-  const painted = useMemo(() => {
-    const sheet = paper.canvas
-    const build = (l: NoteLang) =>
-      sheet ? notePagesByLang[l].map((p, i) => drawNote(sheet, p, i, notePagesByLang[l].length, l)) : []
-    return { es: build('es'), en: build('en') }
-  }, [paper, fontsReady])
+  // Painting all 7 pages x 2 languages up front was hundreds of fillText/measureText calls
+  // blocking the main thread right as the scene tried to show its first frame. Instead, paint
+  // the page currently on screen immediately (cheap: one canvas) and paint the rest of that
+  // language's pages in the background; the other language is only painted once the visitor
+  // actually switches to it.
+  const paintCache = useRef(new Map<string, PaintedPage | null>())
+  const backgroundQueued = useRef(new Set<NoteLang>())
+  const [paintTick, setPaintTick] = useState(0)
+  const paperCanvas = paper.canvas
 
-  const sheets = painted[lang]
+  const paintOne = useCallback(
+    (l: NoteLang, i: number) => {
+      const key = `${l}-${i}`
+      if (paintCache.current.has(key)) return
+      if (!paperCanvas) return
+      const pages = notePagesByLang[l]
+      paintCache.current.set(key, drawNote(paperCanvas, pages[i], i, pages.length, l))
+    },
+    [paperCanvas],
+  )
+
+  // Ensures the page currently on screen is painted right away, independent of the
+  // background queue below - otherwise turning to a page the queue hasn't reached yet
+  // would show blank paper until it eventually caught up.
+  useEffect(() => {
+    if (!paperCanvas || !fontsReady) return
+    paintOne(lang, pageIndex)
+    setPaintTick((t) => t + 1)
+  }, [paperCanvas, fontsReady, lang, pageIndex, paintOne])
+
+  // Fills in the rest of a language's pages once, in the background. Deliberately uses
+  // setTimeout rather than requestIdleCallback: with the R3F canvas rendering every frame,
+  // the main thread is rarely idle enough for requestIdleCallback to ever fire, which left
+  // every page but the current one permanently unpainted.
+  useEffect(() => {
+    if (!paperCanvas || !fontsReady) return
+    if (backgroundQueued.current.has(lang)) return
+    backgroundQueued.current.add(lang)
+    let cancelled = false
+    const order = notePagesByLang[lang].map((_, i) => i)
+    const step = (queueIndex: number) => {
+      if (cancelled || queueIndex >= order.length) return
+      paintOne(lang, order[queueIndex])
+      setPaintTick((t) => t + 1)
+      setTimeout(() => step(queueIndex + 1), 0)
+    }
+    step(0)
+    return () => {
+      cancelled = true
+    }
+  }, [paperCanvas, fontsReady, lang, paintOne])
 
   useEffect(
     () => () => {
-      for (const set of Object.values(painted)) set.forEach((p) => p?.texture.dispose())
+      for (const page of paintCache.current.values()) page?.texture.dispose()
     },
-    [painted],
+    [],
   )
+
+  const sheets = useMemo(
+    () =>
+      Array.from(
+        { length: notePagesByLang[lang].length },
+        (_, i) => paintCache.current.get(`${lang}-${i}`) ?? null,
+      ),
+    // paintTick forces a recompute whenever a background paint finishes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [lang, paintTick],
+  )
+
 
   useEffect(() => {
     asColor(textures.boardMap)
@@ -672,7 +727,7 @@ export function ClipBoard({
       }
     })
     enableShadows(model)
-    fitToHeight(model, height, 'ClipBoard')
+    fitToHeight(model, height)
 
     // The sheets are separate planes laid over the model's page, so they need that
     // mesh's box expressed in the wrapping group's space.
