@@ -143,6 +143,15 @@ export function useMusicPlayer() {
     audio.volume = muted ? 0 : volume
   }, [volume, muted])
 
+  /** Idempotent: safe to call from any gesture handler to (re)start playback. */
+  const ensurePlaying = useCallback(() => {
+    const audio = audioRef.current
+    if (!audio) return
+    ensureAnalyser()
+    void ctxRef.current?.resume()
+    if (audio.paused) void audio.play().catch(() => undefined)
+  }, [ensureAnalyser])
+
   // Autoplay is usually blocked until the visitor interacts, so retry on the first gesture.
   useEffect(() => {
     const audio = audioRef.current
@@ -152,29 +161,29 @@ export function useMusicPlayer() {
 
     const onGesture = () => {
       if (cancelled) return
-      ensureAnalyser()
-      void ctxRef.current?.resume()
-      if (audio.paused) void audio.play().catch(() => undefined)
+      ensurePlaying()
     }
     const events = ['pointerdown', 'keydown', 'touchstart'] as const
-    events.forEach((e) => window.addEventListener(e, onGesture, { once: true }))
+    // Capture phase: on mobile the first tap is usually on the boombox itself, whose onClick
+    // calls stopPropagation() during bubbling — capturing here means that can't swallow this
+    // listener before it fires, which was making the very first tap silently not unlock audio.
+    events.forEach((e) => window.addEventListener(e, onGesture, { once: true, capture: true }))
     return () => {
       cancelled = true
-      events.forEach((e) => window.removeEventListener(e, onGesture))
+      events.forEach((e) => window.removeEventListener(e, onGesture, { capture: true }))
     }
-  }, [ensureAnalyser])
+  }, [ensurePlaying])
 
   const toggle = useCallback(() => {
     const audio = audioRef.current
     if (!audio) return
     if (audio.paused) {
-      ensureAnalyser()
-      void ctxRef.current?.resume()
-      void audio.play().catch(() => undefined)
+      ensurePlaying()
     } else {
       audio.pause()
     }
-  }, [ensureAnalyser])
+  }, [ensurePlaying])
+
 
   const previous = useCallback(() => {
     const audio = audioRef.current
@@ -224,6 +233,7 @@ export function useMusicPlayer() {
       shuffle,
       repeat,
       toggle,
+      ensurePlaying,
       next,
       previous,
       seek,
@@ -234,7 +244,7 @@ export function useMusicPlayer() {
       toggleShuffle,
       toggleRepeat,
     }),
-    [track, playing, progress, duration, volume, muted, shuffle, repeat, toggle, next, previous, seek, getLevels, nudgeVolume, changeVolume, toggleShuffle, toggleRepeat],
+    [track, playing, progress, duration, volume, muted, shuffle, repeat, toggle, ensurePlaying, next, previous, seek, getLevels, nudgeVolume, changeVolume, toggleShuffle, toggleRepeat],
   )
 }
 

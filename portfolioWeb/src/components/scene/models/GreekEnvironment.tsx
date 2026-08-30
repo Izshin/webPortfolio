@@ -11,6 +11,14 @@ const BASE = asset('/models/greek-modular-environment/source/extracted/GreekModu
 // useLoader keeps ONE loader instance per constructor, and setMaterials mutates it — without a
 // private subclass this model and the Gojo OBJ overwrite each other's .mtl before either parses.
 class GreekOBJLoader extends OBJLoader {}
+class GreekMTLLoader extends MTLLoader {}
+
+// This diorama is purely decorative background seen through the window — it's the heaviest
+// asset in the scene (OBJ+MTL+textures) and shouldn't hold up the loading screen or the
+// skybox. Its own manager keeps its loads out of drei's useProgress (which only listens to
+// THREE.DefaultLoadingManager), so it can keep loading/retrying quietly and pop in whenever
+// it's ready instead of gating anything else.
+const backgroundManager = new THREE.LoadingManager()
 
 // Leaf/hedge diffuse textures ship a real alpha channel for cutout cards (verified: Palm/Cordyline/Hedge Diff.png are RGBA; Grass/Trunk are opaque RGB).
 const FOLIAGE_ALPHA_PATTERN = /leaf|hedge|cordyline/i
@@ -25,11 +33,13 @@ const ORPHAN_MATERIAL_MAP_SOURCE: Record<string, string> = {
 /** Sketchfab "Greek Modular Environment" diorama (buildings/hedges/grass) — used as distant scenery seen through the Wall's window. */
 export function GreekEnvironment({
   height = 8.5,
-  onReady,
   ...props
-}: { height?: number; onReady?: () => void } & JSX.IntrinsicElements['group']) {
-  const materials = useLoader(MTLLoader, `${BASE}/GreekModularEnvironment.mtl`)
+}: { height?: number } & JSX.IntrinsicElements['group']) {
+  const materials = useLoader(GreekMTLLoader, `${BASE}/GreekModularEnvironment.mtl`, (loader) => {
+    loader.manager = backgroundManager
+  })
   const obj = useLoader(GreekOBJLoader, `${BASE}/GreekModularEnvironment.obj`, (loader) => {
+    loader.manager = backgroundManager
     materials.preload()
     loader.setMaterials(materials)
   })
@@ -72,8 +82,7 @@ export function GreekEnvironment({
       }
     })
     fitToHeight(model, height)
-    onReady?.()
-  }, [model, height, materials, onReady])
+  }, [model, height, materials])
 
   return (
     <group {...props}>

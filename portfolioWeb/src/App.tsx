@@ -15,11 +15,17 @@ function App() {
   const [focus, setFocus] = useState<FocusTarget | null>(null)
   const [pageIndex, setPageIndex] = useState(0)
   const [lang, setLang] = useState<NoteLang>('es')
-  const [backgroundReady, setBackgroundReady] = useState(false)
   const [cameraPan, setCameraPan] = useState<CameraPan>('center')
   const isMobile = useIsMobile()
   const player = useMusicPlayer()
   const touchStart = useRef<{ x: number; y: number } | null>(null)
+
+  // Opening the boombox panel is usually the visitor's first tap/click on the page: start
+  // playback right on that gesture instead of relying solely on the global unlock listener.
+  const handleFocus = (target: FocusTarget | null) => {
+    setFocus(target)
+    if (target === 'boombox') player.ensurePlaying()
+  }
 
   const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
     if (!isMobile || focus !== null) return
@@ -45,7 +51,7 @@ function App() {
       <Suspense fallback={null}>
         <Room
           focus={focus}
-          onFocus={setFocus}
+          onFocus={handleFocus}
           onBackgroundClick={() => setFocus(null)}
           musicPlaying={player.playing}
           musicLevels={player.getLevels}
@@ -53,11 +59,10 @@ function App() {
           onPageChange={setPageIndex}
           lang={lang}
           onLangChange={setLang}
-          onBackgroundReady={() => setBackgroundReady(true)}
           cameraPan={isMobile ? cameraPan : 'center'}
         />
       </Suspense>
-      <LoadingScreen backgroundReady={backgroundReady} />
+      <LoadingScreen />
       {isMobile && (
         <CameraPanControls view={cameraPan} onChange={setCameraPan} disabled={focus !== null} />
       )}

@@ -126,7 +126,6 @@ export function Room({
   onPageChange,
   lang,
   onLangChange,
-  onBackgroundReady,
   cameraPan = 'center',
 }: {
   focus: FocusTarget | null
@@ -138,7 +137,6 @@ export function Room({
   onPageChange: (index: number) => void
   lang: NoteLang
   onLangChange: (lang: NoteLang) => void
-  onBackgroundReady?: () => void
   cameraPan?: CameraPan
 }) {
   // Bumped on every Gojo click; WacomPen watches it and plays a one-shot wiggle each time it changes.
@@ -195,13 +193,19 @@ export function Room({
         />
       </Suspense>
 
+      {/* Own Suspense so the (fast) skybox shows the outside view right away instead of
+          waiting on the much heavier Greek environment below. */}
       <Suspense fallback={null}>
-        <Skybox position={[0, -5, 0]}/>
+        <Skybox position={[0, -5, 0]} />
+      </Suspense>
+
+      {/* Slow OBJ+MTL diorama: left in its own boundary so it can pop in whenever it's
+          ready, without gating the skybox or the loading screen on it. */}
+      <Suspense fallback={null}>
         <RetryOnError>
           <GreekEnvironment
             position={[0.5, -5.3, -9.5]}
             rotation={[0, Math.PI * 1, 0]}
-            onReady={onBackgroundReady}
           />
         </RetryOnError>
       </Suspense>

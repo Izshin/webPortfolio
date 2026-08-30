@@ -7,12 +7,12 @@ const FADE_MS = 800
 /**
  * Covers the scene until three's loading manager goes quiet. `active` briefly drops
  * between sequential loaders (mtl → obj → textures), so the exit waits a beat and is
- * cancelled if more work comes in. `backgroundReady` gates the exit further: on slow
- * machines the Greek environment (OBJ+MTL, retried on failure — see RetryOnError) can
- * still be loading/retrying after the generic progress tracker goes quiet, so without
- * this the screen could fade out before that background ever appears.
+ * cancelled if more work comes in. The Greek environment background (OBJ+MTL, heaviest
+ * asset in the scene) deliberately loads through its own private LoadingManager (see
+ * GreekEnvironment.tsx) so it does NOT hold up this screen — it pops in on its own
+ * whenever it's ready, while everything else (including the skybox) still gates the exit.
  */
-export function LoadingScreen({ backgroundReady = true }: { backgroundReady?: boolean }) {
+export function LoadingScreen() {
   const { active, progress, loaded, total } = useProgress()
   const started = useRef(false)
   const [fading, setFading] = useState(false)
@@ -24,10 +24,10 @@ export function LoadingScreen({ backgroundReady = true }: { backgroundReady?: bo
       setFading(false)
       return
     }
-    if (!started.current || !backgroundReady) return
+    if (!started.current) return
     const timer = setTimeout(() => setFading(true), 700)
     return () => clearTimeout(timer)
-  }, [active, backgroundReady])
+  }, [active])
 
   // Safety net: if something never settles (stuck `active`/backgroundReady), don't leave
   // the screen stuck forever once loading has visibly finished.
