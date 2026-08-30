@@ -224,6 +224,11 @@ const enPages: NotePage[] = [
       { kind: 'bullet', text: 'Driving license' },
       { kind: 'gap' },
       { kind: 'meta', text: `Reach me at ${profile.email}` },
+      { kind: 'gap', size: 14 },
+      {
+        kind: 'meta',
+        text: 'This site is a personal, non-commercial portfolio. Third-party 3D models/assets remain the property of their original creators and are used here only to showcase this project.',
+      },
     ],
   },
 ]
@@ -416,6 +421,11 @@ const esPages: NotePage[] = [
       { kind: 'bullet', text: 'Carnet de conducir' },
       { kind: 'gap' },
       { kind: 'meta', text: `Escríbeme a ${profile.email}` },
+      { kind: 'gap', size: 14 },
+      {
+        kind: 'meta',
+        text: 'Esta web es un portfolio personal sin fines comerciales. Los modelos y recursos 3D de terceros pertenecen a sus creadores originales y solo se usan aquí para mostrar este proyecto.',
+      },
     ],
   },
 ]

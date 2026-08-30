@@ -1,6 +1,16 @@
 export const skills = {
   languages: ['Python', 'Java', 'JavaScript', 'TypeScript', 'C#'],
-  frameworks: ['React', 'Angular', 'JUnit', 'Django', 'Keras'],
+  frameworks: [
+    'React',
+    'Angular',
+    'JUnit',
+    'Django',
+    'Keras',
+    'Three.js',
+    'React Three Fiber',
+    'React Three Drei',
+    'Framer Motion',
+  ],
   tools: [
     'Git',
     'GitHub Actions',
