@@ -1,8 +1,12 @@
 import { useEffect, useMemo, type JSX } from 'react'
 import { useGLTF } from '@react-three/drei'
+import type { ThreeEvent } from '@react-three/fiber'
 import * as THREE from 'three'
 import { enableShadows, fitToHeight } from './modelUtils'
 import { asset } from '../../../asset'
+
+// R3F types event handler props as `Fn | Readonly<Fn>`, and Readonly<Fn> has no call signature.
+type PointerHandler = (event: ThreeEvent<PointerEvent>) => void
 
 // Decimated from the original 237k-face OBJ (28.75 MB) down to ~30k faces via Blender headless
 // (tools/decimate-gojo.py) and re-exported as GLB (~1.4 MB) — see OPTIMIZATION_PLAN.md phase 3.1.
@@ -35,11 +39,11 @@ export function GojoPenHolder({ height = 0.18, ...props }: { height?: number } &
       onPointerOver={(e) => {
         e.stopPropagation()
         document.body.style.cursor = 'pointer'
-        props.onPointerOver?.(e)
+        ;(props.onPointerOver as PointerHandler | undefined)?.(e)
       }}
       onPointerOut={(e) => {
         document.body.style.cursor = 'auto'
-        props.onPointerOut?.(e)
+        ;(props.onPointerOut as PointerHandler | undefined)?.(e)
       }}
     >
       <primitive object={model} />
