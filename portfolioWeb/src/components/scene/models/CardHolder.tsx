@@ -26,6 +26,11 @@ export const FLOAT_Y = 0.1
 /** How far it steps out along the tray's reading side (-x). */
 export const FLOAT_OUT = 0.055
 
+// Same damp() curve for the pull-out/put-back motion, but slower going back into the tray
+// so closing reads as a calm settle rather than the snappy pull-out reversed.
+const OUT_DAMP_OPEN = 4
+const OUT_DAMP_CLOSE = 1.8
+
 const X_AXIS = new THREE.Vector3(1, 0, 0)
 const Z_AXIS = new THREE.Vector3(0, 0, 1)
 
@@ -144,7 +149,7 @@ function TakenCard({
     const dt = Math.min(delta, 0.05)
     const clock = state.clock.elapsedTime
 
-    out.current = THREE.MathUtils.damp(out.current, interactive ? 1 : 0, 4, dt)
+    out.current = THREE.MathUtils.damp(out.current, interactive ? 1 : 0, interactive ? OUT_DAMP_OPEN : OUT_DAMP_CLOSE, dt)
     spin.current = THREE.MathUtils.damp(spin.current, flipped ? Math.PI : 0, 7, dt)
     const t = out.current
 

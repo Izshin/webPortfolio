@@ -30,7 +30,18 @@ export function GojoPenHolder({ height = 0.18, ...props }: { height?: number } &
   }, [model, height])
 
   return (
-    <group {...props}>
+    <group
+      {...props}
+      onPointerOver={(e) => {
+        e.stopPropagation()
+        document.body.style.cursor = 'pointer'
+        props.onPointerOver?.(e)
+      }}
+      onPointerOut={(e) => {
+        document.body.style.cursor = 'auto'
+        props.onPointerOut?.(e)
+      }}
+    >
       <primitive object={model} />
     </group>
   )

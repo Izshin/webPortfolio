@@ -4,6 +4,67 @@
   overflow: hidden;
 }
 
+.camera-pan {
+  position: fixed;
+  left: 50%;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(20, 15, 8, 0.35);
+  backdrop-filter: blur(8px);
+  transition: opacity 0.2s ease;
+}
+
+/* Panning the idle framing while focused on a prop does nothing (CameraRig ignores `pan`
+   during focus), so grey the whole control out instead of leaving it looking live. */
+.camera-pan.is-disabled {
+  opacity: 0.4;
+}
+
+.camera-pan.is-disabled .camera-pan__btn {
+  cursor: default;
+}
+
+.camera-pan__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  color: #fffdf7;
+  background: rgba(255, 255, 255, 0.16);
+  cursor: pointer;
+}
+
+.camera-pan__btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.camera-pan__dots {
+  display: flex;
+  gap: 6px;
+}
+
+.camera-pan__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.camera-pan__dot.is-active {
+  background: #fffdf7;
+}
+
+
 .app canvas {
   display: block;
   touch-action: none;

@@ -1,4 +1,4 @@
-import { Suspense } from 'react'
+import { Suspense, useRef, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { Environment, PerspectiveCamera, ContactShadows } from '@react-three/drei'
 import { Desk } from './models/Desk'
@@ -23,6 +23,9 @@ import { asset } from '../../asset'
 // Self-hosted instead of drei's `preset="apartment"` (which fetches from raw.githack.com) so
 // the env map load doesn't depend on an external CDN being reachable in the critical path.
 const APARTMENT_HDRI = asset('/hdri/apartment_1k.hdr')
+
+// Shared with CameraRig's responsive fov/pullback below the WIDE_ASPECT it's tuned for.
+const BASE_FOV = 42
 
 const BOOMBOX_POSITION: [number, number, number] = [-0.059, 0.74, -0.249]
 const BOOMBOX_ROTATION_Y = -1.7
@@ -98,6 +101,17 @@ const FOCUS_POSES: Record<FocusTarget, typeof BOOMBOX_FOCUS> = {
   card: CARD_FOCUS,
 }
 
+// Mobile-only: the fixed idle framing can't show the whole desk width at once (see
+// CameraRig's responsive fov/pullback), so a look-left/center/right toggle turns the
+// camera in place (yaw) instead of leaving the ends permanently offscreen.
+export type CameraPan = 'left' | 'center' | 'right'
+// Left is less pronounced than right — the desk's own asymmetry (lookAt already sits left
+// of the camera's x) made an equal-magnitude left turn feel like it swung too far.
+const PAN_ANGLE_LEFT = (16 * Math.PI) / 180
+const PAN_ANGLE_RIGHT = (25 * Math.PI) / 180
+// Signs flipped relative to the angle's own left/right label — matches CameraRig's yaw direction.
+const PAN_BY_VIEW: Record<CameraPan, number> = { left: PAN_ANGLE_LEFT, center: 0, right: -PAN_ANGLE_RIGHT }
+
 export function Room({
   focus,
   onFocus,
@@ -109,6 +123,7 @@ export function Room({
   lang,
   onLangChange,
   onBackgroundReady,
+  cameraPan = 'center',
 }: {
   focus: FocusTarget | null
   onFocus: (target: FocusTarget | null) => void
@@ -120,7 +135,11 @@ export function Room({
   lang: NoteLang
   onLangChange: (lang: NoteLang) => void
   onBackgroundReady?: () => void
+  cameraPan?: CameraPan
 }) {
+  // Bumped on every Gojo click; WacomPen watches it and plays a one-shot wiggle each time it changes.
+  const [penWiggle, setPenWiggle] = useState(0)
+
   return (
     <Canvas
       shadows
@@ -129,12 +148,14 @@ export function Room({
       performance={{ min: 0.85 }}
       onPointerMissed={onBackgroundClick}
     >
-      <PerspectiveCamera makeDefault position={[0.4, 1.13, 0.79]} fov={42} near={0.1} far={40} />
-      {/* Fixed framing; CameraRig only adds a small pointer-driven drift around it. */}
+      <PerspectiveCamera makeDefault position={[0.4, 1.13, 0.79]} fov={BASE_FOV} near={0.1} far={40} />
+      {/* Fixed framing; CameraRig only adds a small pointer-driven drift, plus a responsive fov/pullback on narrow viewports. */}
       <CameraRig
         basePosition={[0.4, 1.13, 0.79]}
         lookAt={[-0.08, 0.57, -0.24]}
         focus={focus ? FOCUS_POSES[focus] : null}
+        baseFov={BASE_FOV}
+        pan={PAN_BY_VIEW[cameraPan]}
       />
 
       <color attach="background" args={['#efe0c4']} />
@@ -186,8 +207,19 @@ export function Room({
         <Bonsai position={[-0.618, 0.74, -0.178]} rotation={[0, 0.63, 0]} />
         <PottedPlant position={[-2.6, 0, -2.4]} rotation={[0, 0.6, 0]} />
         <PottedPlant position={[1.2, 0, -2.2]} height={1.05} rotation={[0, -0.5, 0]} />
-        <GojoPenHolder position={[0.505, 0.752, -0.142]} rotation={[0, -0.5, 0]} />
-        <WacomPen position={[0.581, 0.92, -0.113]} rotation={[Math.PI / 2, 0, Math.PI / 1.5]} />
+        <GojoPenHolder
+          position={[0.505, 0.752, -0.142]}
+          rotation={[0, -0.5, 0]}
+          onClick={(e) => {
+            e.stopPropagation()
+            setPenWiggle((n) => n + 1)
+          }}
+        />
+        <WacomPen
+          position={[0.581, 0.92, -0.113]}
+          rotation={[Math.PI / 2, 0, Math.PI / 1.5]}
+          wiggle={penWiggle}
+        />
         <Boombox
           position={BOOMBOX_POSITION}
           rotation={[0, BOOMBOX_ROTATION_Y, 0]}

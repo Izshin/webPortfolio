@@ -1,8 +1,10 @@
 import { Suspense, useState } from 'react'
-import { Room, type FocusTarget } from './components/scene/Room'
+import { Room, type CameraPan, type FocusTarget } from './components/scene/Room'
 import { MusicPlayer } from './components/music/MusicPlayer'
 import { useMusicPlayer } from './components/music/useMusicPlayer'
 import { LoadingScreen } from './components/LoadingScreen'
+import { CameraPanControls } from './components/CameraPanControls'
+import { useIsMobile } from './hooks/useIsMobile'
 import type { NoteLang } from './data/notes'
 import './App.css'
 
@@ -11,6 +13,8 @@ function App() {
   const [pageIndex, setPageIndex] = useState(0)
   const [lang, setLang] = useState<NoteLang>('es')
   const [backgroundReady, setBackgroundReady] = useState(false)
+  const [cameraPan, setCameraPan] = useState<CameraPan>('center')
+  const isMobile = useIsMobile()
   const player = useMusicPlayer()
 
   return (
@@ -27,9 +31,13 @@ function App() {
           lang={lang}
           onLangChange={setLang}
           onBackgroundReady={() => setBackgroundReady(true)}
+          cameraPan={isMobile ? cameraPan : 'center'}
         />
       </Suspense>
       <LoadingScreen backgroundReady={backgroundReady} />
+      {isMobile && (
+        <CameraPanControls view={cameraPan} onChange={setCameraPan} disabled={focus !== null} />
+      )}
       <MusicPlayer open={focus === 'boombox'} player={player} onClose={() => setFocus(null)} />
     </div>
   )
