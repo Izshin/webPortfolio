@@ -10,6 +10,7 @@ function App() {
   const [focus, setFocus] = useState<FocusTarget | null>(null)
   const [pageIndex, setPageIndex] = useState(0)
   const [lang, setLang] = useState<NoteLang>('es')
+  const [backgroundReady, setBackgroundReady] = useState(false)
   const player = useMusicPlayer()
 
   return (
@@ -25,9 +26,10 @@ function App() {
           onPageChange={setPageIndex}
           lang={lang}
           onLangChange={setLang}
+          onBackgroundReady={() => setBackgroundReady(true)}
         />
       </Suspense>
-      <LoadingScreen />
+      <LoadingScreen backgroundReady={backgroundReady} />
       <MusicPlayer open={focus === 'boombox'} player={player} onClose={() => setFocus(null)} />
     </div>
   )

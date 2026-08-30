@@ -7,9 +7,12 @@ const FADE_MS = 800
 /**
  * Covers the scene until three's loading manager goes quiet. `active` briefly drops
  * between sequential loaders (mtl → obj → textures), so the exit waits a beat and is
- * cancelled if more work comes in.
+ * cancelled if more work comes in. `backgroundReady` gates the exit further: on slow
+ * machines the Greek environment (OBJ+MTL, retried on failure — see RetryOnError) can
+ * still be loading/retrying after the generic progress tracker goes quiet, so without
+ * this the screen could fade out before that background ever appears.
  */
-export function LoadingScreen() {
+export function LoadingScreen({ backgroundReady = true }: { backgroundReady?: boolean }) {
   const { active, progress, loaded, total } = useProgress()
   const started = useRef(false)
   const [fading, setFading] = useState(false)
@@ -21,10 +24,10 @@ export function LoadingScreen() {
       setFading(false)
       return
     }
-    if (!started.current) return
+    if (!started.current || !backgroundReady) return
     const timer = setTimeout(() => setFading(true), 700)
     return () => clearTimeout(timer)
-  }, [active])
+  }, [active, backgroundReady])
 
   useEffect(() => {
     if (!fading) return

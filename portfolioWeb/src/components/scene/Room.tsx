@@ -16,6 +16,7 @@ import { Skybox } from './models/Skybox'
 import { CameraRig } from './CameraRig'
 import { Wall } from './Wall'
 import { Floor } from './Floor'
+import { RetryOnError } from './RetryOnError'
 import type { NoteLang } from '../../data/notes'
 import { asset } from '../../asset'
 
@@ -107,6 +108,7 @@ export function Room({
   onPageChange,
   lang,
   onLangChange,
+  onBackgroundReady,
 }: {
   focus: FocusTarget | null
   onFocus: (target: FocusTarget | null) => void
@@ -117,6 +119,7 @@ export function Room({
   onPageChange: (index: number) => void
   lang: NoteLang
   onLangChange: (lang: NoteLang) => void
+  onBackgroundReady?: () => void
 }) {
   return (
     <Canvas
@@ -168,7 +171,13 @@ export function Room({
 
       <Suspense fallback={null}>
         <Skybox position={[0, -5, 0]}/>
-        <GreekEnvironment position={[0.5, -5.3, -9.5]} rotation={[0, Math.PI * 1, 0]}/>
+        <RetryOnError>
+          <GreekEnvironment
+            position={[0.5, -5.3, -9.5]}
+            rotation={[0, Math.PI * 1, 0]}
+            onReady={onBackgroundReady}
+          />
+        </RetryOnError>
       </Suspense>
 
       <Suspense fallback={null}>

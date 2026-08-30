@@ -23,7 +23,11 @@ const ORPHAN_MATERIAL_MAP_SOURCE: Record<string, string> = {
 }
 
 /** Sketchfab "Greek Modular Environment" diorama (buildings/hedges/grass) — used as distant scenery seen through the Wall's window. */
-export function GreekEnvironment({ height = 8.5, ...props }: { height?: number } & JSX.IntrinsicElements['group']) {
+export function GreekEnvironment({
+  height = 8.5,
+  onReady,
+  ...props
+}: { height?: number; onReady?: () => void } & JSX.IntrinsicElements['group']) {
   const materials = useLoader(MTLLoader, `${BASE}/GreekModularEnvironment.mtl`)
   const obj = useLoader(GreekOBJLoader, `${BASE}/GreekModularEnvironment.obj`, (loader) => {
     materials.preload()
@@ -68,7 +72,8 @@ export function GreekEnvironment({ height = 8.5, ...props }: { height?: number }
       }
     })
     fitToHeight(model, height)
-  }, [model, height, materials])
+    onReady?.()
+  }, [model, height, materials, onReady])
 
   return (
     <group {...props}>
