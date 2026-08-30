@@ -106,15 +106,16 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
   ctx.closePath()
 }
 
-/** Splits `plain [label](url) plain` into styled runs. */
+/** Splits `plain [label](url) {{emphasised}} plain` into styled runs. */
 function parseRuns(source: string) {
-  const runs: { text: string; url?: string }[] = []
-  const pattern = /\[([^\]]+)\]\(([^)]+)\)/g
+  const runs: { text: string; url?: string; highlight?: boolean }[] = []
+  const pattern = /\[([^\]]+)\]\(([^)]+)\)|\{\{([^}]+)\}\}/g
   let last = 0
   let match: RegExpExecArray | null
   while ((match = pattern.exec(source))) {
     if (match.index > last) runs.push({ text: source.slice(last, match.index) })
-    runs.push({ text: match[1], url: match[2] })
+    if (match[3] !== undefined) runs.push({ text: match[3], highlight: true })
+    else runs.push({ text: match[1], url: match[2] })
     last = match.index + match[0].length
   }
   if (last < source.length) runs.push({ text: source.slice(last) })
@@ -122,8 +123,9 @@ function parseRuns(source: string) {
 }
 
 /**
- * Word-wraps text that may carry inline links, painting those in blue with an underline and
- * collecting their hit rect. Returns the y just past the last line.
+ * Word-wraps text that may carry inline links or `{{highlighted}}` runs, painting links in
+ * blue with an underline and highlights in blue without one. Returns the y just past the
+ * last line.
  */
 function drawRich(
   ctx: CanvasRenderingContext2D,
@@ -152,7 +154,7 @@ function drawRich(
         }
       }
       if (paint) {
-        ctx.fillStyle = run.url ? INK.blue : color
+        ctx.fillStyle = run.url || run.highlight ? INK.blue : color
         ctx.fillText(word, cx, y)
         if (run.url) {
           ctx.fillRect(cx, y + 6, width, 2)
@@ -329,7 +331,9 @@ function drawLanguageToggle(ctx: CanvasRenderingContext2D, lang: NoteLang, links
   fillTracked(ctx, counter, (PAGE_W - trackedWidth(ctx, counter, 3)) / 2, arrowY + 7, 3)
 
   if (index < total - 1) drawChevron(ctx, PAGE_W * ARROW_NEXT_U, arrowY, 1)
-  if (index > 0) drawChevron(ctx, PAGE_W * ARROW_PREV_U, arrowY, -1)
+  // Drawn on every page, page 0 included: with no previous page to flip to, this slot
+  // instead exits the clipboard (see the ArrowZone wiring below).
+  drawChevron(ctx, PAGE_W * ARROW_PREV_U, arrowY, -1)
 
   const texture = new THREE.CanvasTexture(canvas)
   texture.colorSpace = THREE.SRGBColorSpace
@@ -595,6 +599,7 @@ export function ClipBoard({
   lang = 'es',
   onLangChange,
   onPageChange,
+  onExit,
   ...props
 }: {
   height?: number
@@ -603,6 +608,7 @@ export function ClipBoard({
   lang?: NoteLang
   onLangChange?: (lang: NoteLang) => void
   onPageChange?: (index: number) => void
+  onExit?: () => void
 } & JSX.IntrinsicElements['group']) {
   const fbx = useLoader(FBXLoader, `${BASE}/source/ClipBoard.fbx`)
   const textures = useTexture({
@@ -777,14 +783,13 @@ export function ClipBoard({
               onSelect={() => handlePageChange(pageIndex + 1)}
             />
           )}
-          {onPageChange && pageIndex > 0 && (
-            <ArrowZone
-              frame={frame}
-              u={ARROW_PREV_U}
-              stack={sheets.length}
-              onSelect={() => handlePageChange(pageIndex - 1)}
-            />
-          )}
+          {/* Same slot on every page: turns back a page, or exits the clipboard on page 0. */}
+          <ArrowZone
+            frame={frame}
+            u={ARROW_PREV_U}
+            stack={sheets.length}
+            onSelect={() => (pageIndex > 0 ? handlePageChange(pageIndex - 1) : onExit?.())}
+          />
         </>
       )}
     </group>

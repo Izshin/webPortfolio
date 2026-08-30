@@ -55,7 +55,7 @@ const enPages: NotePage[] = [
       { kind: 'heading', text: 'Get in touch' },
       {
         kind: 'text',
-        text: 'Click anywhere outside the clipboard to see the table and click the business card :)',
+        text: 'Click anywhere {{outside the clipboard}} to see the table and click the business card :)',
       },
       { kind: 'gap', size: 8 },
       {
@@ -251,7 +251,7 @@ const esPages: NotePage[] = [
       { kind: 'heading', text: 'Contacto' },
       {
         kind: 'text',
-        text: 'Haz clic fuera del portafolios para ver la mesa y pincha en la tarjeta de visita :)',
+        text: 'Haz clic {{fuera del portafolios}} para ver la mesa y pincha en la tarjeta de visita :)',
       },
       { kind: 'gap', size: 8 },
       {

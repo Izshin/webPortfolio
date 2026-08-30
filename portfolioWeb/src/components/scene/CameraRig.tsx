@@ -18,6 +18,8 @@ type CameraRigProps = {
   baseFov?: number
   /** Yaw (radians) applied to the idle look-at point around the camera position — mobile's look left/right toggle. Turns the camera in place instead of sliding it sideways. */
   pan?: number
+  /** >1 dollies the focus camera closer to `focus.lookAt` — mobile pinch/double-tap zoom while reading a prop. No effect when idle. */
+  zoom?: number
 }
 
 // The whole scene (desk position, lookAt, fov) was composed for a landscape browser window.
@@ -40,12 +42,14 @@ export function CameraRig({
   focusDamping = 0.06,
   baseFov = 42,
   pan = 0,
+  zoom = 1,
 }: CameraRigProps) {
   const target = useRef(new THREE.Vector3())
   const aim = useRef(new THREE.Vector3(...lookAt))
   const desiredAim = useRef(new THREE.Vector3())
   const idleBase = useRef(new THREE.Vector3(...basePosition))
   const aimOffset = useRef(new THREE.Vector3())
+  const zoomLookAt = useRef(new THREE.Vector3())
   const { camera, pointer, size } = useThree()
   const [ax, ay] = amplitude
 
@@ -73,7 +77,11 @@ export function CameraRig({
     if (devDragging.active) return
 
     if (focus) {
+      zoomLookAt.current.set(...focus.lookAt)
       target.current.set(...focus.position)
+      // Dolly toward the look-at point along the same line, rather than changing fov, so
+      // the framing stays perspective-correct while zoomed in.
+      if (zoom !== 1) target.current.sub(zoomLookAt.current).divideScalar(zoom).add(zoomLookAt.current)
       desiredAim.current.set(...focus.lookAt)
     } else {
       const { x: bx, y: by, z: bz } = idleBase.current

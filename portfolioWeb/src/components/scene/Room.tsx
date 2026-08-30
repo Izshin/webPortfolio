@@ -127,6 +127,7 @@ export function Room({
   lang,
   onLangChange,
   cameraPan = 'center',
+  clipboardZoom = 1,
 }: {
   focus: FocusTarget | null
   onFocus: (target: FocusTarget | null) => void
@@ -138,6 +139,8 @@ export function Room({
   lang: NoteLang
   onLangChange: (lang: NoteLang) => void
   cameraPan?: CameraPan
+  /** Pinch/double-tap zoom while reading the résumé on mobile — 1 is the tuned focus framing. */
+  clipboardZoom?: number
 }) {
   // Bumped on every Gojo click; WacomPen watches it and plays a one-shot wiggle each time it changes.
   const [penWiggle, setPenWiggle] = useState(0)
@@ -159,6 +162,7 @@ export function Room({
         focus={focus ? FOCUS_POSES[focus] : null}
         baseFov={BASE_FOV}
         pan={PAN_BY_VIEW[cameraPan]}
+        zoom={focus === 'clipboard' ? clipboardZoom : 1}
       />
 
       <color attach="background" args={['#efe0c4']} />
@@ -256,6 +260,7 @@ export function Room({
           lang={lang}
           onLangChange={onLangChange}
           onPageChange={onPageChange}
+          onExit={() => onFocus(null)}
           onClick={(e) => {
             e.stopPropagation()
             // Focus only: while reading, clicks on the board must not close it, or turning

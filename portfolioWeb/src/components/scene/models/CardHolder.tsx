@@ -192,7 +192,7 @@ function TakenCard({
         onPointerOut={() => (document.body.style.cursor = 'auto')}
       />
       {interactive && !flipped && faces.front && <CardLinks links={faces.front.links} />}
-      {interactive && flipped && <CardBassZone onMiss={() => setFlipped(false)} />}
+      {interactive && flipped && <CardBassZone onMiss={() => setFlipped(false)} hint={faces.back?.hint} />}
     </group>
   )
 }

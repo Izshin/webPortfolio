@@ -276,9 +276,16 @@ function paintBack(bass: CanvasImageSource | undefined, lang: NoteLang) {
   ctx.font = `700 26px ${FONT_HEAD}`
   ctx.fillStyle = INK.blue
   const hint = COPY[lang].click
-  fillTracked(ctx, hint, (FACE_W - trackedWidth(ctx, hint, 6)) / 2, 596, 6)
+  const hintY = 596
+  const hintWidth = trackedWidth(ctx, hint, 6)
+  fillTracked(ctx, hint, (FACE_W - hintWidth) / 2, hintY, 6)
+  // Generous padding around the glyphs: this is the "press it" call to action, so tapping
+  // near it (not just exactly on ink) should play the note instead of falling through to
+  // the flip zone.
+  const HINT_HIT_PAD = 22
+  const hintRect = { yTop: hintY - 30 - HINT_HIT_PAD, yBottom: hintY + 10 + HINT_HIT_PAD, width: hintWidth + HINT_HIT_PAD * 2 }
 
-  return { texture: toTexture(canvas) }
+  return { texture: toTexture(canvas), hint: hintRect }
 }
 
 /** Repaints once the web fonts are in, so the first paint is not the fallback face. */
@@ -299,7 +306,7 @@ function useFontsReady() {
 
 export type CardFaces = {
   front: { texture: THREE.CanvasTexture; links: LinkRect[] } | null
-  back: { texture: THREE.CanvasTexture } | null
+  back: { texture: THREE.CanvasTexture; hint: { yTop: number; yBottom: number; width: number } } | null
 }
 
 /** Paints both faces once; the holder shares the same pair across the whole stack. */
@@ -351,12 +358,24 @@ export function CardLinks({ links }: { links: LinkRect[] }) {
   )
 }
 
+function playBassNote() {
+  const note = new Audio(BASS_SFX)
+  note.volume = 0.7
+  void note.play().catch(() => {})
+}
+
 /**
- * The back face's hit zones: a square pad over the body of the printed bass plays the note,
- * and the rest of the paper turns the card back over. Both sit above the card mesh, so a
- * click on the back never falls through to it.
+ * The back face's hit zones: a square pad over the body of the printed bass and a second pad
+ * over the "press it" hint caption both play the note; the rest of the paper turns the card
+ * back over. All three sit above the card mesh, so a click on the back never falls through to it.
  */
-export function CardBassZone({ onMiss }: { onMiss?: () => void }) {
+export function CardBassZone({
+  onMiss,
+  hint,
+}: {
+  onMiss?: () => void
+  hint?: { yTop: number; yBottom: number; width: number }
+}) {
   const side = (BASS_HIT_PX / FACE_W) * CARD_W
 
   return (
@@ -374,9 +393,7 @@ export function CardBassZone({ onMiss }: { onMiss?: () => void }) {
         position={[0, (BASS_HIT_V - 0.5) * CARD_D, 0.0002]}
         onClick={(e) => {
           e.stopPropagation()
-          const note = new Audio(BASS_SFX)
-          note.volume = 0.7
-          void note.play().catch(() => {})
+          playBassNote()
         }}
         onPointerOver={(e) => {
           e.stopPropagation()
@@ -386,6 +403,22 @@ export function CardBassZone({ onMiss }: { onMiss?: () => void }) {
         <planeGeometry args={[side, side]} />
         <meshBasicMaterial transparent opacity={0} depthWrite={false} />
       </mesh>
+      {hint && (
+        <mesh
+          position={[0, (1 - (hint.yTop + hint.yBottom) / 2 / FACE_H - 0.5) * CARD_D, 0.0002]}
+          onClick={(e) => {
+            e.stopPropagation()
+            playBassNote()
+          }}
+          onPointerOver={(e) => {
+            e.stopPropagation()
+            document.body.style.cursor = 'pointer'
+          }}
+        >
+          <planeGeometry args={[(hint.width / FACE_W) * CARD_W, ((hint.yBottom - hint.yTop) / FACE_H) * CARD_D]} />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        </mesh>
+      )}
     </group>
   )
 }
