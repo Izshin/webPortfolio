@@ -1,7 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import type { CameraPan } from './scene/Room'
-
-const ORDER: CameraPan[] = ['left', 'center', 'right']
+import { CAMERA_PAN_ORDER as ORDER, type CameraPan } from './scene/Room'
 
 /** Mobile-only look left/center/right toggle — see Room's PAN_BY_VIEW for the camera-side shift. */
 export function CameraPanControls({

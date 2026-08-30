@@ -29,6 +29,14 @@ export function LoadingScreen({ backgroundReady = true }: { backgroundReady?: bo
     return () => clearTimeout(timer)
   }, [active, backgroundReady])
 
+  // Safety net: if something never settles (stuck `active`/backgroundReady), don't leave
+  // the screen stuck forever once loading has visibly finished.
+  useEffect(() => {
+    if (progress < 100) return
+    const timer = setTimeout(() => setFading(true), 10000)
+    return () => clearTimeout(timer)
+  }, [progress])
+
   useEffect(() => {
     if (!fading) return
     const timer = setTimeout(() => setDone(true), FADE_MS)

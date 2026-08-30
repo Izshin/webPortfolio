@@ -107,6 +107,8 @@ const FOCUS_POSES: Record<FocusTarget, typeof BOOMBOX_FOCUS> = {
 // CameraRig's responsive fov/pullback), so a look-left/center/right toggle turns the
 // camera in place (yaw) instead of leaving the ends permanently offscreen.
 export type CameraPan = 'left' | 'center' | 'right'
+// Shared with CameraPanControls (buttons) and App (swipe) so both agree on step order.
+export const CAMERA_PAN_ORDER: CameraPan[] = ['left', 'center', 'right']
 // Left is less pronounced than right — the desk's own asymmetry (lookAt already sits left
 // of the camera's x) made an equal-magnitude left turn feel like it swung too far.
 const PAN_ANGLE_LEFT = (16 * Math.PI) / 180
