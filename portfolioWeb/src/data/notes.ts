@@ -115,24 +115,24 @@ const enPages: NotePage[] = [
     blocks: [
       {
         kind: 'lead',
-        text: 'Most of what I know I learned by building — these are the projects that gave me my technical base.',
+        text: 'Most of what I know I learned by building these are the projects I did to learn.',
       },
       { kind: 'gap', size: 6 },
       {
         kind: 'bullet',
-        text: `[Todo Jardín](${URL.todoJardin}) — a Django storefront for a garden shop: catalog, cart, checkout with Braintree and an admin panel to run it.`,
+        text: `[Todo Jardín](${URL.todoJardin}) : A Django storefront for a garden shop: catalog, cart, checkout with Braintree and an admin panel to run it.`,
       },
       {
         kind: 'bullet',
-        text: `[Truco Beasts](${URL.truco}) — a Spring Boot and React card game built by six of us; I owned the interface and every animation in it.`,
+        text: `[Truco Beasts](${URL.truco}) : A Spring Boot and React card game built by six of us; I owned the interface and every animation in it.`,
       },
       {
         kind: 'bullet',
-        text: `[Othello AI](${URL.othello}) — a Keras CNN over a dual-channel 8×8 board, trained on MCTS self-play games with class weighting and early stopping, and then used to score positions inside the search.`,
+        text: `[Othello AI](${URL.othello}) : A Keras CNN over a dual-channel 8×8 board, trained on MCTS self-play games with class weighting and early stopping, and then used to score positions inside the search.`,
       },
       {
         kind: 'bullet',
-        text: `[uvlhub](${URL.uvlhub}) — a Flask project where I learned to dockerize everything and cover it with Selenium and Locust tests.`,
+        text: `[uvlhub](${URL.uvlhub}) : A Flask project where I learned to dockerize everything and cover it with Selenium and Locust tests.`,
       },
     ],
   },
@@ -191,7 +191,7 @@ const enPages: NotePage[] = [
   {
     eyebrow: 'Toolbox',
     title: 'Stack',
-    subtitle: 'Everything here I have used on a real project, not just read about',
+    subtitle: 'Everything here I have used on a project, apart from reading about it',
     blocks: [
       { kind: 'heading', text: 'Languages' },
       { kind: 'tags', items: skills.languages },

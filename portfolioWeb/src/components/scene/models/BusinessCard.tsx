@@ -41,14 +41,14 @@ const COPY: Record<NoteLang, { flip: string; bass: string; click: string; title:
   es: {
     flip: 'PULSA PARA GIRAR',
     bass: 'Y TOCO EL BAJO',
-    click: '¡PÚLSALO!',
+    click: '¡PÚLSAME!',
     title: 'Graduado en Ingeniería del Software',
     location: 'Sevilla, España',
   },
   en: {
     flip: 'CLICK TO FLIP',
     bass: 'AND I PLAY BASS',
-    click: 'CLICK IT!',
+    click: 'CLICK ME!',
     title: profile.title,
     location: profile.location,
   },
