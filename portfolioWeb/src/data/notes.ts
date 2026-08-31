@@ -35,6 +35,9 @@ const URL = {
   knitted: 'https://www.facebook.com/knittedforyou/',
   figma:
     'https://www.figma.com/design/ivY7HPLWbzuRNq33VFGL4U/Knitting-Preview-mock?node-id=199-4858',
+  cosmoCrush: 'https://github.com/Izshin/CosmoCrush',
+  quizzieD: 'https://github.com/Izshin/QuizzieD',
+  spaceMonKeys: 'https://github.com/Space-Mon-Keys/Frontend',
 }
 
 const enPages: NotePage[] = [
@@ -189,6 +192,29 @@ const enPages: NotePage[] = [
     ],
   },
   {
+    eyebrow: 'Curiosity',
+    title: 'Side projects',
+    blocks: [
+      {
+        kind: 'lead',
+        text: "These are small projects I've built on my own, purely out of curiosity or the urge to learn something new. They're smaller than the rest, but they've helped me learn quickly and adapt to new technologies.",
+      },
+      { kind: 'gap', size: 6 },
+      {
+        kind: 'bullet',
+        text: `[CosmoCrush](${URL.cosmoCrush}) : A 3D space-modelling playground I put together at a hackathon, meant as a base to build other space projects on top of.`,
+      },
+      {
+        kind: 'bullet',
+        text: `[QuizzieD](${URL.quizzieD}) : An animated React + TypeScript trivia app I built for a JetBrains task, with Framer Motion transitions and interactive charts.`,
+      },
+      {
+        kind: 'bullet',
+        text: `[Space25](${URL.spaceMonKeys}) : I took part in this one, the hackathon's final project — a tool that estimates the severity of a meteor impact, with a 3D globe visualisation. I only worked on the frontend.`,
+      },
+    ],
+  },
+  {
     eyebrow: 'Toolbox',
     title: 'Stack',
     subtitle: 'Everything here I have used on a project, apart from reading about it',
@@ -220,7 +246,7 @@ const enPages: NotePage[] = [
       { kind: 'meta', text: 'Language Institute, University of Seville' },
       { kind: 'gap' },
       { kind: 'heading', text: 'Also' },
-      { kind: 'bullet', text: 'Spanish (native) and English (C1)' },
+      { kind: 'bullet', text: 'Spanish (native)' },
       { kind: 'bullet', text: 'Driving license' },
       { kind: 'gap' },
       { kind: 'meta', text: `Reach me at ${profile.email}` },
@@ -379,6 +405,29 @@ const esPages: NotePage[] = [
       {
         kind: 'text',
         text: 'Llevar el diseño y el frontend por separado me enseñó a pensar en el flujo y en lo intuitiva que resultaba la app.',
+      },
+    ],
+  },
+  {
+    eyebrow: 'Extra',
+    title: 'Proyectos varios',
+    blocks: [
+      {
+        kind: 'lead',
+        text: 'Estos son mini proyectos que he ido haciendo por mi cuenta, por mera curiosidad o ganas de aprender. Son más pequeños que el resto, pero también han significado algo para mi capacidad de adaptación a diversas tecnologías.',
+      },
+      { kind: 'gap', size: 6 },
+      {
+        kind: 'bullet',
+        text: `[CosmoCrush](${URL.cosmoCrush}) : Una base de modelado 3D espacial que monté en una hackathon, pensada como punto de partida para futuros proyectos.`,
+      },
+      {
+        kind: 'bullet',
+        text: `[QuizzieD](${URL.quizzieD}) : Una app de trivia animada en React + TypeScript que hice para una task de JetBrains, con transiciones en Framer Motion y gráficas interactivas.`,
+      },
+      {
+        kind: 'bullet',
+        text: `[Space25](${URL.spaceMonKeys}) : En este participé, es el proyecto final de la hackathon — un software que estima la severidad de la colisión de un meteoro, con una visualización 3D en globo terráqueo. Solo hice algo del frontend.`,
       },
     ],
   },

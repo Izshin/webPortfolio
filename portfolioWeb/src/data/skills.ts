@@ -25,5 +25,6 @@ export const skills = {
     'AI',
     'Maven',
     'OAuth 2.0',
+    'Domain Management',
   ],
 }
