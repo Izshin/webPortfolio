@@ -28,6 +28,7 @@ const URL = {
   elegidos: 'https://orquestaelegidos.com/',
   elegidosRepo: 'https://github.com/Izshin/Elegidos',
   todoJardin: 'https://github.com/Izshin/Todo-Jardin-Des',
+  todoJardinLive: 'https://jhonpgpi.eu.pythonanywhere.com/',
   truco: 'https://github.com/Izshin/Truco',
   othello: 'https://github.com/Izshin/Othelo-AI-bot',
   uvlhub: 'https://github.com/Izshin/uvlhub',
@@ -123,7 +124,7 @@ const enPages: NotePage[] = [
       { kind: 'gap', size: 6 },
       {
         kind: 'bullet',
-        text: `[Todo Jardín](${URL.todoJardin}) : A Django storefront for a garden shop: catalog, cart, checkout with Braintree and an admin panel to run it.`,
+        text: `[Todo Jardín](${URL.todoJardinLive}) ([Github](${URL.todoJardin})) : A Django storefront for a garden shop: catalog, cart, checkout with Braintree and an admin panel to run it.`,
       },
       {
         kind: 'bullet',
@@ -337,7 +338,7 @@ const esPages: NotePage[] = [
       { kind: 'gap', size: 6 },
       {
         kind: 'bullet',
-        text: `[Todo Jardín](${URL.todoJardin}) — una tienda en Django para un vivero: catálogo, carrito, checkout con Braintree y un panel de administración para gestionarlo.`,
+        text: `[Todo Jardín](${URL.todoJardinLive}) ([Github](${URL.todoJardin})) — una tienda en Django para un vivero: catálogo, carrito, checkout con Braintree y un panel de administración para gestionarlo.`,
       },
       {
         kind: 'bullet',
