@@ -152,28 +152,6 @@ export function useMusicPlayer() {
     if (audio.paused) void audio.play().catch(() => undefined)
   }, [ensureAnalyser])
 
-  // Autoplay is usually blocked until the visitor interacts, so retry on the first gesture.
-  useEffect(() => {
-    const audio = audioRef.current
-    if (!audio) return
-    let cancelled = false
-    void audio.play().catch(() => undefined)
-
-    const onGesture = () => {
-      if (cancelled) return
-      ensurePlaying()
-    }
-    const events = ['pointerdown', 'keydown', 'touchstart'] as const
-    // Capture phase: on mobile the first tap is usually on the boombox itself, whose onClick
-    // calls stopPropagation() during bubbling — capturing here means that can't swallow this
-    // listener before it fires, which was making the very first tap silently not unlock audio.
-    events.forEach((e) => window.addEventListener(e, onGesture, { once: true, capture: true }))
-    return () => {
-      cancelled = true
-      events.forEach((e) => window.removeEventListener(e, onGesture, { capture: true }))
-    }
-  }, [ensurePlaying])
-
   const toggle = useCallback(() => {
     const audio = audioRef.current
     if (!audio) return
