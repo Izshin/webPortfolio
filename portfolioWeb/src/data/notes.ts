@@ -144,7 +144,7 @@ const enPages: NotePage[] = [
     eyebrow: 'Experience 01',
     title: 'Click-IT',
     titleUrl: URL.clickIt,
-    subtitle: 'Barcelona, Spain · 4 months',
+    subtitle: 'Barcelona, Spain · May - Present',
     blocks: [
       {
         kind: 'lead',
@@ -173,7 +173,7 @@ const enPages: NotePage[] = [
     eyebrow: 'Experience 02',
     title: 'KnittedForYou',
     titleUrl: URL.knitted,
-    subtitle: 'Swedish startup · 3 months',
+    subtitle: 'Swedish startup · January - March',
     blocks: [
       {
         kind: 'lead',
@@ -241,7 +241,7 @@ const enPages: NotePage[] = [
       { kind: 'gap', size: 6 },
       { kind: 'heading', text: profile.education.degree },
       { kind: 'meta', text: profile.education.school },
-      { kind: 'text', text: `GPA ${profile.education.gpa}` },
+      { kind: 'text', text: `GPA ${profile.education.gpa} · Graduated ${profile.education.graduationDate}` },
       { kind: 'gap' },
       { kind: 'heading', text: 'English C1' },
       { kind: 'meta', text: 'Language Institute, University of Seville' },
@@ -250,7 +250,7 @@ const enPages: NotePage[] = [
       { kind: 'bullet', text: 'Spanish (native)' },
       { kind: 'bullet', text: 'Driving license' },
       { kind: 'gap' },
-      { kind: 'meta', text: `Reach me at ${profile.email}` },
+      { kind: 'meta', text: `Reach me at ${profile.email} · ${profile.phone}` },
       { kind: 'gap', size: 14 },
       {
         kind: 'meta',
@@ -358,7 +358,7 @@ const esPages: NotePage[] = [
     eyebrow: 'Experiencia 01',
     title: 'Click-IT',
     titleUrl: URL.clickIt,
-    subtitle: 'Barcelona, España · 4 meses',
+    subtitle: 'Barcelona, España · Mayo - Actualidad',
     blocks: [
       {
         kind: 'lead',
@@ -387,7 +387,7 @@ const esPages: NotePage[] = [
     eyebrow: 'Experiencia 02',
     title: 'KnittedForYou',
     titleUrl: URL.knitted,
-    subtitle: 'Startup sueca · 3 meses',
+    subtitle: 'Startup sueca · Enero - Marzo',
     blocks: [
       {
         kind: 'lead',
@@ -461,7 +461,7 @@ const esPages: NotePage[] = [
         kind: 'meta',
         text: 'Escuela Técnica Superior de Ingeniería Informática, Universidad de Sevilla',
       },
-      { kind: 'text', text: `Nota media ${profile.education.gpa}` },
+      { kind: 'text', text: `Nota media ${profile.education.gpa} · Graduado en Junio 2026` },
       { kind: 'gap' },
       { kind: 'heading', text: 'Inglés C1' },
       { kind: 'meta', text: 'Instituto de Idiomas, Universidad de Sevilla' },
@@ -470,7 +470,7 @@ const esPages: NotePage[] = [
       { kind: 'bullet', text: 'Español (nativo)' },
       { kind: 'bullet', text: 'Carnet de conducir' },
       { kind: 'gap' },
-      { kind: 'meta', text: `Escríbeme a ${profile.email}` },
+      { kind: 'meta', text: `Escríbeme a ${profile.email} · ${profile.phone}` },
       { kind: 'gap', size: 14 },
       {
         kind: 'meta',

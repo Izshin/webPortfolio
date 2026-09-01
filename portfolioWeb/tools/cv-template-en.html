@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Iván Fernández Limárquez — CV</title>
+<style>
+  @page { size: A4 portrait; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: #d7dde8;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #1a2233;
+    font-size: 9.9pt;
+    line-height: 1.42;
+  }
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 10mm auto;
+    padding: 12mm 15mm;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.25);
+  }
+  @media print {
+    html, body { background: #fff; }
+    .page { width: auto; min-height: auto; margin: 0; padding: 12mm 15mm; box-shadow: none; }
+  }
+  h1 { font-size: 20pt; margin: 0; color: #12233f; }
+  .title { font-size: 11pt; color: #1f47a3; font-weight: 600; margin-top: 2px; }
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 2.5px solid #1f47a3;
+    padding-bottom: 6px;
+    margin-bottom: 7px;
+  }
+  .identity { display: flex; align-items: center; gap: 12px; }
+  .photo {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #1f47a3;
+    flex-shrink: 0;
+  }
+  .contact { text-align: right; font-size: 8.2pt; line-height: 1.45; }
+  .contact a { color: #1f47a3; text-decoration: underline; text-underline-offset: 2px; }
+  .summary { margin: 6px 0 9px; font-size: 8.9pt; }
+  .columns { display: flex; gap: 18px; }
+  .col-main { flex: 1.55; }
+  .col-side { flex: 1; border-left: 1px solid #d7dde8; padding-left: 14px; }
+  h2 {
+    font-size: 9.6pt;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #1f47a3;
+    border-bottom: 1px solid #c7d1e6;
+    margin: 0 0 6px;
+    padding-bottom: 2px;
+  }
+  section { margin-bottom: 12px; }
+  .item { margin-bottom: 7px; }
+  .item:last-child { margin-bottom: 0; }
+  .item-head {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 9pt;
+    color: #12233f;
+  }
+  .item-head a { color: #1f47a3; text-decoration: underline; text-underline-offset: 2px; }
+  .item-sub {
+    font-style: italic;
+    font-size: 8.2pt;
+    color: #445070;
+    margin-bottom: 1px;
+  }
+  ul { margin: 3px 0 0; padding-left: 15px; }
+  li { margin-bottom: 2px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
+  .tag {
+    background: #eef1f9;
+    color: #1f47a3;
+    border-radius: 3px;
+    padding: 1.5px 6px;
+    font-size: 8.1pt;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .skill-line { margin-bottom: 7px; }
+  .skill-line b { display: block; font-size: 8.6pt; color: #12233f; margin-bottom: 2px; }
+  footer {
+    margin-top: 10px;
+    padding-top: 6px;
+    border-top: 1px solid #d7dde8;
+    font-size: 7.6pt;
+    color: #7280a0;
+    text-align: center;
+  }
+  a { word-break: break-word; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="identity">
+    <img class="photo" src="../public/photos/me.jpg" alt="Iván Fernández Limárquez" />
+    <div>
+      <h1>Iván Fernández Limárquez</h1>
+      <div class="title">Software Engineering Graduate — Frontend &amp; UX</div>
+    </div>
+  </div>
+  <div class="contact">
+    Seville, Spain · +34 659 996 468<br/>
+    <a href="mailto:ivaferlimjob@gmail.com">ivaferlimjob@gmail.com</a><br/>
+    <a href="https://github.com/Izshin">github.com/Izshin</a><br/>
+    <a href="https://www.linkedin.com/in/ivan-fern%C3%A1ndez-lim%C3%A1rquez/">linkedin.com/in/ivan-fernández-limárquez</a><br/>
+    <a href="https://ivanfernandezlimarquez.com">ivanfernandezlimarquez.com</a>
+  </div>
+</header>
+
+<p class="summary">
+  Software Engineering graduate passionate about building clean, user-friendly software.
+  Specialised in <b>frontend and UX design</b>, backed by a solid full-stack foundation.
+  Bilingual Spanish (native) / English (C1). Fast learner, quick to adapt to new
+  technologies, with real experience dealing with clients, product and legacy code.
+  <br/>Prefer to explore the CV in 3D? <a href="https://ivanfernandezlimarquez.com">ivanfernandezlimarquez.com</a>
+  (<a href="https://github.com/Izshin/webPortfolio">code on Github</a>).
+</p>
+
+<div class="columns">
+  <div class="col-main">
+
+    <section>
+      <h2>Experience</h2>
+      <div class="item">
+        <div class="item-head"><span><a href="https://click-it.es/">Click-IT</a> — Developer</span><span>Barcelona · May - Present</span></div>
+        <ul>
+          <li><b>La Farga:</b> vehicle and parking management for L'Hospitalet (Angular + Fastify), direct client contact.</li>
+          <li><b>GSharp:</b> internal CRM; went deeper into Django and integrated Microsoft's Planner API.</li>
+          <li><b>Kam (mesoestetic):</b> international market and competition management suite — campaigns, targets, catalogue.</li>
+          <li>First backend in .NET/C#, refactoring and work on legacy code and bottlenecks.</li>
+        </ul>
+      </div>
+      <div class="item">
+        <div class="item-head"><span><a href="https://www.facebook.com/knittedforyou/">KnittedForYou</a> — UX/UI &amp; Frontend Design</span><span>Swedish startup · January - March</span></div>
+        <ul>
+          <li>Designed every <a href="https://www.figma.com/design/ivY7HPLWbzuRNq33VFGL4U/Knitting-Preview-mock?node-id=199-4858">mockup</a> and the whole user flow in Figma.</li>
+          <li>Implemented several screens as React components.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>Featured projects</h2>
+      <div class="item">
+        <div class="item-head">Scubex — Bachelor's Thesis</div>
+        <div class="item-sub"><a href="https://scubex.vercel.app/">scubex.vercel.app</a> · <a href="https://github.com/Izshin/Scubex">github.com/Izshin/Scubex</a> · React MobX + Spring Boot + PostgreSQL</div>
+        <ul>
+          <li>Full-stack social network for scuba divers; design, development and deployment (Vercel + Railway).</li>
+          <li>Google OAuth 2.0, species detection (GBIF API), dive weather forecasting (Open-Meteo).</li>
+          <li>137 unit tests, +90% code coverage.</li>
+        </ul>
+      </div>
+      <div class="item">
+        <div class="item-head">Orquesta Elegidos — Web design and development</div>
+        <div class="item-sub"><a href="https://orquestaelegidos.com/">orquestaelegidos.com</a> · <a href="https://github.com/Izshin/Elegidos">github.com/Izshin/Elegidos</a> · React + Vite + GitHub Pages</div>
+        <ul>
+          <li>Full website from scratch for a band with over 30 years on stage: design, self-updating news, Gmail contact form, CD on GitHub Pages.</li>
+        </ul>
+      </div>
+      <div class="item">
+        <div class="item-head">Interactive 3D portfolio</div>
+        <div class="item-sub"><a href="https://ivanfernandezlimarquez.com">ivanfernandezlimarquez.com</a> · React 19 + Three.js + R3F + Drei</div>
+        <ul>
+          <li>Navigable 3D desk with an interactive CV, an animated business card and a music player.</li>
+          <li>Load size optimised from 209&nbsp;MB to 45&nbsp;MB (WebP, mesh decimation, code splitting).</li>
+        </ul>
+      </div>
+      <div class="item">
+        <div class="item-head">Todo Jardín — Django online store</div>
+        <div class="item-sub"><a href="https://jhonpgpi.eu.pythonanywhere.com/">jhonpgpi.eu.pythonanywhere.com</a> · <a href="https://github.com/Izshin/Todo-Jardin-Des">github.com/Izshin/Todo-Jardin-Des</a></div>
+        <ul>
+          <li>Full online store for a garden shop: catalog, cart and checkout with the Braintree payment gateway.</li>
+          <li>Own admin panel to manage products and orders.</li>
+        </ul>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="col-side">
+
+    <section>
+      <h2>University &amp; personal projects</h2>
+      <ul>
+        <li><a href="https://github.com/Izshin/Truco">Truco Beasts</a> — Spring Boot + React card game (interface and animations).</li>
+        <li><a href="https://github.com/Izshin/Othelo-AI-bot">Othello AI</a> — Keras CNN trained through MCTS self-play.</li>
+        <li><a href="https://github.com/Izshin/uvlhub">uvlhub</a> — dockerized Flask project, tests with Selenium and Locust.</li>
+        <li><a href="https://github.com/Izshin/CosmoCrush">CosmoCrush</a> · <a href="https://github.com/Izshin/QuizzieD">QuizzieD</a> · <a href="https://github.com/Space-Mon-Keys/Frontend">Space25</a> — hackathon/curiosity projects.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Education</h2>
+      <div class="item">
+        <div class="item-head" style="display:block;">B.Sc. in Software Engineering</div>
+        <div class="item-sub">University of Seville · June 2026 · GPA 7.03/10</div>
+      </div>
+      <div class="item">
+        <div class="item-head" style="display:block;">English C1</div>
+        <div class="item-sub">Language Institute, Univ. of Seville</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Tech stack</h2>
+      <div class="skill-line">
+        <b>Languages</b>
+        <div class="tags">
+          <span class="tag">Python</span><span class="tag">Java</span><span class="tag">JavaScript</span>
+          <span class="tag">TypeScript</span><span class="tag">C#</span>
+        </div>
+      </div>
+      <div class="skill-line">
+        <b>Frameworks / libraries</b>
+        <div class="tags">
+          <span class="tag">React</span><span class="tag">Angular</span><span class="tag">Spring Boot</span>
+          <span class="tag">Django</span><span class="tag">Flask</span><span class="tag">.NET</span>
+          <span class="tag">JUnit</span><span class="tag">Keras</span><span class="tag">Three.js</span>
+          <span class="tag">R3F</span><span class="tag">Framer Motion</span>
+        </div>
+      </div>
+      <div class="skill-line">
+        <b>Tools</b>
+        <div class="tags">
+          <span class="tag">Git</span><span class="tag">GitHub Actions</span><span class="tag">Docker</span>
+          <span class="tag">Vercel</span><span class="tag">Railway</span><span class="tag">Vite</span>
+          <span class="tag">Figma</span><span class="tag">CI/CD</span><span class="tag">Scrum</span>
+          <span class="tag">REST</span><span class="tag">OAuth 2.0</span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Languages</h2>
+      <ul>
+        <li>Spanish — native</li>
+        <li>English — C1</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Other</h2>
+      <ul>
+        <li>Driving license</li>
+      </ul>
+    </section>
+
+  </div>
+</div>
+
+</div>
+</body>
+</html>
