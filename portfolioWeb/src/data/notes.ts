@@ -50,7 +50,7 @@ const enPages: NotePage[] = [
       { kind: 'heading', text: 'Who am I?' },
       {
         kind: 'lead',
-        text: "As the top says, I'm Iván! A Software Engineering graduate who loves building clean, user-friendly products. Frontend and UX design are my thing, backed by solid full-stack experience.",
+        text: "As the top says, I'm Iván! A Software Engineering graduate who loves building clean, user-friendly products. Frontend and UX design are my thing, but I can go full-stack as my main experience is delivering end to end",
       },
       { kind: 'gap', size: 6 },
       { kind: 'bullet', text: 'Spanish — native speaker' },
@@ -269,7 +269,7 @@ const esPages: NotePage[] = [
       { kind: 'heading', text: '¿Quién soy?' },
       {
         kind: 'lead',
-        text: 'Como pone arriba, ¡Soy Iván! Un graduado en Ingeniería del Software al que le encanta construir productos limpios y fáciles de usar. Lo mío es el frontend y el diseño UX, con una buena base full-stack detrás.',
+        text: 'Como pone arriba, ¡Soy Iván! Un graduado en Ingeniería del Software al que le encanta construir productos limpios y fáciles de usar. Lo mío es el frontend y el diseño UX, pero también hago full-stack ya que mi experiencia es end to end',
       },
       { kind: 'gap', size: 6 },
       { kind: 'bullet', text: 'Español — nativo' },
