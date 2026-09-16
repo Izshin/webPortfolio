@@ -157,7 +157,7 @@ const enPages: NotePage[] = [
       },
       {
         kind: 'bullet',
-        text: 'GSharp: Click-IT’s own internal CRM, where I went deeper into Django and used Microsoft’s API to bring in Planner.',
+        text: 'GSharp: Click-IT’s own internal ERP, where I went deeper into Django and used Microsoft’s API to bring in Planner.',
       },
       {
         kind: 'bullet',
@@ -371,7 +371,7 @@ const esPages: NotePage[] = [
       },
       {
         kind: 'bullet',
-        text: 'GSharp: el CRM interno de la propia Click-IT; ahí profundicé en Django y usé la API de Microsoft para integrar Planner.',
+        text: 'GSharp: el ERP interno de la propia Click-IT; ahí profundicé en Django y usé la API de Microsoft para integrar Planner.',
       },
       {
         kind: 'bullet',
