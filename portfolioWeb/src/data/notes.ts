@@ -144,11 +144,11 @@ const enPages: NotePage[] = [
     eyebrow: 'Experience 01',
     title: 'Click-IT',
     titleUrl: URL.clickIt,
-    subtitle: 'Barcelona, Spain · May - Present',
+    subtitle: 'Barcelona, Spain · May 2026 - November 2026',
     blocks: [
       {
         kind: 'lead',
-        text: 'Four months at a Barcelona company, my first time working on bigger products and dealing with bigger clients.',
+        text: 'I worked with a Barcelona-based company on larger products and with direct client contact.',
       },
       { kind: 'gap', size: 6 },
       {
@@ -358,11 +358,11 @@ const esPages: NotePage[] = [
     eyebrow: 'Experiencia 01',
     title: 'Click-IT',
     titleUrl: URL.clickIt,
-    subtitle: 'Barcelona, España · Mayo - Actualidad',
+    subtitle: 'Barcelona, España · Mayo 2026 - Noviembre 2026',
     blocks: [
       {
         kind: 'lead',
-        text: 'Estuve cuatro meses con una empresa barcelonesa, donde trabajé por primera vez con productos más grandes y traté con clientes más relevantes.',
+        text: 'Trabajé con una empresa barcelonesa en productos de mayor escala y con trato directo con clientes.',
       },
       { kind: 'gap', size: 6 },
       {
